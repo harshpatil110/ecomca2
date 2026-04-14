@@ -1,4 +1,32 @@
+import { useState, useEffect } from 'react';
+
 export default function CrmStrategyAdmin() {
+  const [tourRequests, setTourRequests] = useState([]);
+
+  useEffect(() => {
+    let leads = JSON.parse(localStorage.getItem('crm_tour_requests') || '[]');
+    if (leads.length === 0) {
+      const mockLead = {
+        id: 1,
+        client: "Eleanor Vance",
+        email: "eleanor.v@example.com",
+        date: "2026-04-20",
+        propertyId: '1042',
+        propertyName: "The Monolith House",
+        status: "Pending",
+        timestamp: new Date().toISOString()
+      };
+      leads = [mockLead];
+      localStorage.setItem('crm_tour_requests', JSON.stringify(leads));
+    }
+    setTourRequests(leads);
+  }, []);
+
+  const markAsContacted = (id) => {
+    const updated = tourRequests.filter(req => req.id !== id);
+    localStorage.setItem('crm_tour_requests', JSON.stringify(updated));
+    setTourRequests(updated);
+  };
   return (
     <div className="pt-8 pb-20 px-12 space-y-12">
       {/* Automated Flagging System Banner */}
@@ -15,6 +43,45 @@ export default function CrmStrategyAdmin() {
         <button className="bg-white text-stone-900 px-6 py-3 font-black tracking-tighter hover:bg-stone-200 transition-colors rounded-sm uppercase text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
           Acknowledge & Route
         </button>
+      </section>
+
+      {/* ── Pending Tour Requests ── */}
+      <section className="mb-16 mt-12">
+        <h3 className="text-5xl font-black tracking-tighter text-stone-900 uppercase mb-8" style={{ fontFamily: 'Inter, sans-serif' }}>Pending Tour Requests</h3>
+        
+        {tourRequests.length === 0 ? (
+          <div className="bg-[#f5f4ed] border border-stone-200 text-center py-12 rounded-sm shadow-sm">
+            <span className="material-symbols-outlined text-stone-300 text-4xl mb-2">inbox</span>
+            <p className="text-stone-500 font-serif italic text-lg">No pending tour requests at this time.</p>
+          </div>
+        ) : (
+          <div className="bg-white border border-stone-200 rounded-sm shadow-sm overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-[#fbf9f4]">
+                <tr style={{ fontFamily: 'Inter, sans-serif' }}>
+                  <th className="px-6 py-4 font-black tracking-tighter text-stone-400 text-xs uppercase">Client Name</th>
+                  <th className="px-6 py-4 font-black tracking-tighter text-stone-400 text-xs uppercase">Email Address</th>
+                  <th className="px-6 py-4 font-black tracking-tighter text-stone-400 text-xs uppercase">Requested Date</th>
+                  <th className="px-6 py-4 font-black tracking-tighter text-stone-400 text-xs uppercase text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100">
+                {tourRequests.map((req) => (
+                  <tr key={req.id} className="hover:bg-[#fbf9f4]/50 transition-colors">
+                    <td className="px-6 py-5 font-bold text-stone-900" style={{ fontFamily: 'Inter, sans-serif' }}>{req.client}</td>
+                    <td className="px-6 py-5 font-serif italic text-stone-600">{req.email}</td>
+                    <td className="px-6 py-5 font-serif text-stone-800">{new Date(req.date).toLocaleDateString()}</td>
+                    <td className="px-6 py-5 text-right">
+                      <button onClick={() => markAsContacted(req.id)} className="bg-stone-900 text-white px-4 py-2 text-[10px] uppercase tracking-widest font-bold rounded-sm hover:bg-stone-800 transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        Mark Contacted
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
 
       {/* ── Client Profiling & Lead Scoring ── */}

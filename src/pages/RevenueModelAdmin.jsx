@@ -124,7 +124,7 @@ export default function RevenueModelAdmin() {
       <section className="grid grid-cols-12 gap-12 mt-20 pt-20 border-t border-stone-200/60">
         <div className="col-span-12 lg:col-span-4">
           <h5 className="text-4xl font-black tracking-tighter text-stone-900 leading-none" style={{ fontFamily: 'Inter, sans-serif' }}>Revenue Mapping</h5>
-          <p className="mt-4 text-xl italic text-stone-400">Strategies for Q3 & Q4 Fiscal Evolution.</p>
+          <p className="mt-4 text-xl italic text-stone-400">Strategies for generating High Revenue.</p>
         </div>
         <div className="col-span-12 lg:col-span-7 lg:col-start-6">
           <div className="space-y-6 text-stone-700 leading-relaxed max-w-2xl">
