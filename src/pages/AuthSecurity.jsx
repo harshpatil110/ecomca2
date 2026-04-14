@@ -47,7 +47,7 @@ export default function AuthSecurity() {
               <Link to="#" className="text-[10px] font-bold tracking-widest uppercase text-[#5e6058] hover:text-[#31332c] border-b border-transparent hover:border-[#31332c] transition-all" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Forgot Password?
               </Link>
-              <Link to="/admin/crm">
+              <Link to="/admin/revenue">
                 <button className="bg-[#625d5b] text-[#fef6f2] px-10 py-4 rounded-sm text-xs font-black tracking-widest uppercase hover:opacity-90 active:scale-95 transition-all" type="button" style={{ fontFamily: 'Inter, sans-serif' }}>
                   Authenticate
                 </button>
@@ -64,7 +64,7 @@ export default function AuthSecurity() {
       </section>
 
       {/* Right: Editorial Security Panel */}
-      <section className="w-full md:w-1/2 relative overflow-hidden bg-[#efeee6] flex items-center justify-center p-8 md:p-24">
+      <section className="w-full md:w-1/2 relative overflow-y-auto bg-[#efeee6] flex justify-center p-8 md:p-24 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <img
             className="w-full h-full object-cover grayscale"
@@ -72,13 +72,15 @@ export default function AuthSecurity() {
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6x26luKCj8IX6z-BbA5R0opGxPeT30ubae5KzjXk_YIf0HQTlerI3Nzeerg87-WfFRgPmvoS5IUaw6VfcFT9Xi-Sih4kz1k-ZletdkqtUU6nXHjsEIxNAXpeNxcY7LB-uvlQuK2rzWDKsNCQsRzx0TWYXQw9SojPdmK571SOwUtJdyCKyDS1PljOercN160cOhqqcr4GA0NMRakppeosMghFPeIcLby8qM_i_9J24zo-HjyMuX_IgsZBj4m5DpF2-3oliw_5Hn_yB"
           />
         </div>
-        <div className="relative z-10 max-w-lg">
+        <div className="relative z-10 max-w-lg my-auto">
           <h2 className="text-4xl md:text-5xl italic mb-12 leading-tight">Our Security Commitment</h2>
           <div className="space-y-12">
             {[
               { num: '01', title: 'bcrypt', desc: 'Advanced salted hashing protocols ensure your private access credentials remain mathematically inaccessible.' },
               { num: '02', title: 'JWT', desc: 'Stateless JSON Web Tokens facilitate secure, encrypted session management across our global infrastructure.' },
-              { num: '03', title: 'Data Validation', desc: 'Rigorous server-side sanitization layers protect the integrity of our architectural data and user privacy.' }
+              { num: '03', title: 'Data Validation', desc: 'Rigorous server-side sanitization layers protect the integrity of our architectural data and user privacy.' },
+              { num: '04', title: 'Role-Based Access Control (RBAC)', desc: 'Our architecture employs strict RBAC protocols. Buyer, Seller, and Agent environments are logically segregated at the database level, ensuring users can only access data and execute actions explicitly authorized for their specific role, preventing privilege escalation.' },
+              { num: '05', title: 'Zero-Trust MFA & Data Compliance', desc: 'We enforce a Zero-Trust security model featuring mandatory Multi-Factor Authentication (MFA) for administrative and agent access. All Personally Identifiable Information (PII) is secured via AES-256 Encryption at Rest, ensuring rigorous compliance with global data privacy frameworks including GDPR and the DPDPA.' }
             ].map(({ num, title, desc }) => (
               <div key={num} className="flex items-start gap-6">
                 <span className="font-black text-4xl text-[#797c73]/30" style={{ fontFamily: 'Inter, sans-serif' }}>{num}</span>

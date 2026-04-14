@@ -17,10 +17,75 @@ export default function CrmStrategyAdmin() {
         </button>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      {/* ── Client Profiling & Lead Scoring ── */}
+      <section className="mb-16">
+        <h3 className="text-5xl font-black tracking-tighter text-stone-900 uppercase mb-8" style={{ fontFamily: 'Inter, sans-serif' }}>Client Profiling Engine</h3>
+        
+        <div className="bg-white border border-stone-200 rounded-sm shadow-sm overflow-hidden flex flex-col md:flex-row">
+          
+          {/* Profile Card Left */}
+          <div className="md:w-1/3 bg-[#f5f4ed] p-10 border-r border-stone-200 flex flex-col justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Active Buyer Profile</p>
+              <h4 className="text-3xl italic text-stone-900 mb-8 font-serif leading-tight">Alexander Pierce</h4>
+              
+              <div className="space-y-6">
+                <div>
+                  <div className="flex items-end gap-2 mb-1">
+                    <span className="text-5xl font-black tracking-tighter text-[#1d3a56]" style={{ fontFamily: 'Inter, sans-serif' }}>88</span>
+                    <span className="text-xl font-black text-stone-400 mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>/100</span>
+                  </div>
+                  <p className="text-sm font-bold uppercase tracking-widest text-[#1d3a56]" style={{ fontFamily: 'Inter, sans-serif' }}>High Intent</p>
+                </div>
+                
+                <div className="p-4 bg-white/60 border border-stone-200/50 rounded-sm">
+                  <p className="text-[10px] uppercase font-bold text-stone-400 tracking-widest mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Scoring Methodology</p>
+                  <p className="text-sm italic text-stone-600 leading-snug font-serif">
+                    Calculated via engagement metrics: 4 return visits this week, 12+ minutes spent on premium listings.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <button className="mt-10 w-full py-4 border border-stone-900 text-stone-900 font-bold text-xs uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-all rounded-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+              View Full Dossier
+            </button>
+          </div>
+
+          {/* Behavioral Insights Right */}
+          <div className="md:w-2/3 p-10 flex flex-col justify-center">
+            <h5 className="text-sm font-black uppercase tracking-[0.2em] text-stone-900 mb-8" style={{ fontFamily: 'Inter, sans-serif' }}>Behavioral Insights & Automated Actions</h5>
+            
+            <div className="space-y-8">
+              <div className="flex gap-6 items-start">
+                <span className="material-symbols-outlined text-stone-300 text-3xl mt-1">visibility</span>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Observed Behavior</p>
+                  <p className="text-lg text-stone-700 italic font-serif leading-relaxed">
+                    Client frequently views Brutalist architecture and concrete homes in prime locations, specifically abandoning searches if the lot size is under 0.5 acres.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex gap-6 items-start">
+                <span className="material-symbols-outlined text-[#46617f] text-3xl mt-1">auto_awesome</span>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#46617f] mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Automated CRM Action (Triggered)</p>
+                  <p className="text-lg text-stone-700 italic font-serif leading-relaxed">
+                    System automatically dispatched an invite-only preview email for an unlisted concrete villa in Silver Lake, bypassing the standard waitlist.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 border-t border-stone-200/60 pt-16 mt-8">
         {/* Customer Feedback Table */}
         <div className="lg:col-span-2 space-y-6">
-          <h3 className="text-3xl font-black tracking-tighter" style={{ fontFamily: 'Inter, sans-serif' }}>CUSTOMER FEEDBACK ENGINE</h3>
+          <h4 className="text-xl font-black tracking-widest text-stone-400 uppercase" style={{ fontFamily: 'Inter, sans-serif' }}>Customer Feedback Engine</h4>
           <div className="bg-[#f5f4ed] rounded-sm overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead className="bg-stone-200/50">
@@ -67,7 +132,7 @@ export default function CrmStrategyAdmin() {
         {/* Review Management Side Section */}
         <div className="space-y-8">
           <div className="flex justify-between items-baseline">
-            <h3 className="text-3xl font-black tracking-tighter" style={{ fontFamily: 'Inter, sans-serif' }}>REVIEWS</h3>
+            <h4 className="text-xl font-black tracking-widest text-stone-400 uppercase" style={{ fontFamily: 'Inter, sans-serif' }}>REVIEWS</h4>
             <span className="text-stone-400 font-bold text-xs" style={{ fontFamily: 'Inter, sans-serif' }}>PENDING ACTION</span>
           </div>
 

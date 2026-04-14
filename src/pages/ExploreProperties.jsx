@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const listings = [
   { price: '$8,450,000', name: 'The Obsidian Pavilion', location: 'Desert Palisades, Palm Springs', badge: 'Featured', src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDCqQtIg6x38npE2spSNAyEz9_RinQzDpvTvHGAS7BisN1y9XCu86GKpwaQJe3EnjavDkyly6dzDthkAePDHUjMVazfq3itbeWvHblsNsa3kt8XNhFdGyi8jl7kxcTcN2nziXBip5pjGgRiaoiBrTEWC-FDzSqnZKBF15dvJzsfAqKc2h8JhqvUWO16nGMuJ4yS9D1AmqiobYjTt4PjeYy6sDJk304CYDRxRwyj6jVjZ9F1YcQJ4h9e4FHYCiXaaiFjsHvQT5lPJERz' },
@@ -10,6 +10,7 @@ const listings = [
 ];
 
 export default function ExploreProperties() {
+  const navigate = useNavigate();
   return (
     <div className="bg-[#fbf9f4] text-[#31332c]">
       <div className="max-w-6xl mx-auto px-6 py-12 md:py-24">
@@ -67,7 +68,7 @@ export default function ExploreProperties() {
           <div className="md:w-3/4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-16">
               {listings.map(({ price, name, location, badge, src }) => (
-                <div key={name} className="group flex flex-col">
+                <div key={name} onClick={() => navigate('/property/1')} className="group flex flex-col cursor-pointer">
                   <div className="aspect-[4/5] overflow-hidden bg-[#f5f4ed] rounded-sm mb-6 relative">
                     <img
                       className="w-full h-full object-cover grayscale-[20%] group-hover:scale-105 transition-transform duration-700"
@@ -85,7 +86,7 @@ export default function ExploreProperties() {
                     <h2 className="text-xs font-bold uppercase tracking-widest text-stone-900" style={{ fontFamily: 'Inter, sans-serif' }}>{name}</h2>
                     <p className="italic text-stone-500 text-sm mb-4">{location}</p>
                     <Link
-                      to="/property"
+                      to="/property/1"
                       className="inline-block text-[10px] font-black uppercase tracking-widest border border-stone-300 px-6 py-2.5 rounded-sm hover:bg-stone-900 hover:text-white transition-all duration-300"
                       style={{ fontFamily: 'Inter, sans-serif' }}
                     >

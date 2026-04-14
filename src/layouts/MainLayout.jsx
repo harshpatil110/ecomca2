@@ -6,8 +6,8 @@ export default function MainLayout({ children }) {
   const navLinks = [
     { label: 'Portfolio', to: '/' },
     { label: 'Neighborhoods', to: '/explore' },
-    { label: 'Journal', to: '#' },
-    { label: 'Saved', to: '#' },
+    { label: 'Journal', to: '/journal' },
+    { label: 'Saved', to: '/saved' },
   ];
 
   return (
@@ -60,9 +60,16 @@ export default function MainLayout({ children }) {
           <div className="text-md font-black tracking-tighter text-stone-400 uppercase" style={{ fontFamily: 'Inter, sans-serif' }}>
             THE ARCHIVE
           </div>
-          <div className="flex gap-12 text-sm italic text-stone-500" style={{ fontFamily: 'Newsreader, serif' }}>
-            {['Privacy', 'Terms', 'Press', 'Contact'].map((l) => (
-              <a key={l} href="#" className="hover:text-stone-900 transition-all">{l}</a>
+          <div className="flex flex-wrap gap-8 md:gap-12 text-sm italic text-stone-500" style={{ fontFamily: 'Newsreader, serif' }}>
+            {[
+              { label: 'Privacy', path: '/privacy' },
+              { label: 'Terms', path: '/terms' },
+              { label: 'Press', path: '/press' },
+              { label: 'Contact', path: '/contact' },
+            ].map((link) => (
+              <Link key={link.label} to={link.path} className="hover:text-stone-900 transition-all">
+                {link.label}
+              </Link>
             ))}
           </div>
           <div className="text-xs italic text-stone-400 text-center md:text-right" style={{ fontFamily: 'Newsreader, serif' }}>
@@ -75,8 +82,8 @@ export default function MainLayout({ children }) {
       <nav className="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-6 px-6 bg-white/95 backdrop-blur-md border-t border-stone-200/50 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
         {[
           { icon: 'search', label: 'Explore', to: '/explore' },
-          { icon: 'favorite', label: 'Saved', to: '#' },
-          { icon: 'menu_book', label: 'Journal', to: '#' },
+          { icon: 'favorite', label: 'Saved', to: '/saved' },
+          { icon: 'menu_book', label: 'Journal', to: '/journal' },
           { icon: 'person', label: 'Profile', to: '/auth' },
         ].map(({ icon, label, to }) => (
           <Link key={label} to={to} className="flex flex-col items-center justify-center text-stone-400 hover:text-stone-900 transition-colors">

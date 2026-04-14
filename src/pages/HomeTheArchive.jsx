@@ -1,13 +1,16 @@
+import { useNavigate } from 'react-router-dom';
+
 export default function HomeTheArchive() {
+  const navigate = useNavigate();
   return (
     <div className="font-body text-on-surface">
       {/* ── Hero Section ── */}
       <section className="relative h-[870px] w-full overflow-hidden flex flex-col justify-end">
         <div className="absolute inset-0 bg-stone-900/10 z-10" />
         <img
-          alt="Luxury Property"
+          alt="Luxury modern concrete villa exterior at dusk"
           className="absolute inset-0 w-full h-full object-cover"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAgEUdnRMZIUVGdATV8F_pYX41MfRd8StomlZTnMAesHxj-Fh8tJ2BE4oZigBND86aHreLRNm-OqN0g29ERFUG7of-qr5CPFrAI-XU070GgpGmhYviqDrhiyRO_Q2cWZThrU-I-Kq7TaKlB_0fSHBy4bsnnuy9Hnla59Py40X_q44UdT3xanPMSTL9jYxVGJD3ChaOILNOnOPCIOVMw0jBwg4hPcGf5rcmI_xo9lJPsWda7XNjazYWhOS8Mv33Uhy246AijgSAkWMz"
+          src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=2000"
         />
         {/* Hero Search Overlay */}
         <div className="relative z-20 w-full max-w-6xl mx-auto px-8 mb-16">
@@ -30,7 +33,7 @@ export default function HomeTheArchive() {
               <label className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Price Range</label>
               <input className="bg-transparent border-none p-0 focus:ring-0 text-stone-900 placeholder:text-stone-300 text-lg" placeholder="Any Price" type="text" />
             </div>
-            <button className="bg-[#31332c] text-white px-12 py-6 font-bold uppercase tracking-[0.2em] text-xs hover:bg-stone-800 transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <button onClick={() => navigate('/explore')} className="bg-[#31332c] text-white px-12 py-6 font-bold uppercase tracking-[0.2em] text-xs hover:bg-stone-800 transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>
               Search
             </button>
           </div>
@@ -48,13 +51,13 @@ export default function HomeTheArchive() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
-            { price: '$4,250,000', location: '214 Silverlake Terrace, Los Angeles CA', src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCH1Ce-vUPMPBlpIw-_k35Rad2xp1V6cPc710d_XjNUkG4Y7lPrQ-ty4QRV_ac5QRibmPo1NCTqBg8wR36URtEmm6nhAbprQnP2punhtIL39L9NzUcCTBpyhILukqdzst1uZeWEo-p-fCOqmnJMu04JI-LYkaZZM5iPQbAB3_trQZuw31-pTHW7yOyeyVVWJysDAQcHnq-1OW4LAJRqczNnUFW2WkUdO47BaCJ2ZCPigkwRHR7hYImUmcJ4fpqUa3tL9BoqAfitd4aI', offset: '' },
-            { price: '$2,890,000', location: 'The Glass Pavilion, Joshua Tree', src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAY4luGE_VHpI4zIztVRJ4LY6rL9zsVXFvhP7ZCKI2_Yp2vjBhzeQaxx9zeD1DPjB0x8R3OarJjEuFPMmN1jQ8ClNoRnTJuygWyOkrKcmX74qVJIUgavQ9jF0Wmzq8mtJpU9-wO29nsGwOsB6v23HdYynT8epD4lhdeVMieDUwfn1zyYJdWdaUNJr-mbsDQ5M8OV1jB8znFBZnsEsvDg93xKBYtFPb9W8MeuDAsKnkHNH6Bph0hEXUwd4ixgrfp3X1RbJM0qcb-0vEG', offset: 'md:translate-y-12' },
-            { price: '$6,100,000', location: '88 Brutalist Row, Greenwich CT', src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCYI2L1b40yohImGyx7WTuXlF4jA2xw4gRhJMYeHdv8kdNNxQsLWMxy95GtbQqVhSdNl2f192LI8RiMAVeRp0skZ4qKmk_zMQgfu759XbQELJQpNcdOPwUr60cbJVsFyOzQ-bpGtDTkiKXYqU7UaqFSmEacA0clhL9om_EdhI9pvlTwTL3LpDQ7_J_oFeDcEgoCbssPCpPcTheVxfPTF0daCJMcC65bEcqAMykn5enW3qoyWzwPaQ_ELZ9MSjL5Ri-sdmyUJY9f-Mc_', offset: '' },
-          ].map(({ price, location, src, offset }, i) => (
-            <div key={i} className={`group cursor-pointer ${offset}`}>
-              <div className="aspect-[4/5] overflow-hidden mb-6 relative bg-stone-100">
-                <img alt="Property" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src={src} />
+            { price: '$4,250,000', location: '214 Silverlake Terrace, Los Angeles CA', src: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800', offset: '', alt: 'Modern minimalist living room featuring warm beige tones and luxury furniture' },
+            { price: '$2,890,000', location: 'The Glass Pavilion, Joshua Tree', src: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=800', offset: 'md:translate-y-12', alt: 'Exterior view of a brutalist glass pavilion surrounded by nature' },
+            { price: '$6,100,000', location: '88 Brutalist Row, Greenwich CT', src: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&q=80&w=800', offset: '', alt: 'High-end luxury kitchen cast in concrete and dark oak' },
+          ].map(({ price, location, src, offset, alt }, i) => (
+            <div key={i} onClick={() => navigate('/property/1')} className={`group cursor-pointer ${offset}`}>
+              <div className="aspect-[4/5] overflow-hidden mb-6 relative bg-stone-100 border border-stone-200">
+                <img alt={alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src={src} />
                 {i === 0 && <div className="absolute top-4 right-4 bg-white py-1 px-3 text-[10px] font-bold uppercase tracking-widest" style={{ fontFamily: 'Inter, sans-serif' }}>Available</div>}
               </div>
               <div className="space-y-3">
@@ -98,9 +101,9 @@ export default function HomeTheArchive() {
         <div className="relative">
           <div className="absolute -top-12 -left-12 w-48 h-48 bg-[#bedafd]/20 -z-10" />
           <img
-            alt="Architectural Abstract"
-            className="w-full aspect-[3/4] object-cover grayscale"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2UXxDYHXBFLzlsMb2dRU5-wP0PAstcPPURqRpl7A3DOn-7BClyrLtjswEk0K-LtwI4sy_09gIi_THi45uxbMRzH5657j9LcMtnlX2jNZO8oh0-U2n5ENVIQIbrGV1JKWHtzMLhdjLa9hTCQBhgJvoDMeXU1AeOgZTHeYu2eVM8y-LcZ5Ix6y1PcoXQMwwNlSkkbHVl3j_9gdkozCy9XWFeSuuwYuWLaGoWX-Ku1E56icM3RN42yQ3tZaMNn3TeT4rO1aBVnq89410"
+            alt="Editorial architectural abstract focusing on brutalist geometry"
+            className="w-full aspect-[3/4] object-cover grayscale border border-stone-200"
+            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800"
           />
         </div>
         <div className="space-y-12">
@@ -112,7 +115,7 @@ export default function HomeTheArchive() {
             "Luxury is not the presence of noise, but the absence of friction. We look for homes that speak in whispers, yet command the entire room."
           </p>
           <div className="pt-8">
-            <button className="text-stone-900 font-bold uppercase tracking-widest text-xs border-b-2 border-stone-900 pb-2 hover:opacity-50 transition-opacity" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <button onClick={() => navigate('/explore')} className="text-stone-900 font-bold uppercase tracking-widest text-xs border-b-2 border-stone-900 pb-2 hover:opacity-50 transition-opacity" style={{ fontFamily: 'Inter, sans-serif' }}>
               Read the Journal
             </button>
           </div>

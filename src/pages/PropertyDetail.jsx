@@ -32,7 +32,7 @@ export default function PropertyDetail() {
       <div className="flex flex-col lg:flex-row gap-16">
         {/* Main Content (70%) */}
         <div className="lg:w-[70%]">
-          <div className="mb-12">
+          <div className="mb-12 mt-8 md:mt-12">
             <div className="flex items-center gap-4 mb-4">
               <span className="bg-[#bedafd] text-[#1d3a56] text-[10px] font-black tracking-widest px-2 py-1 uppercase rounded-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Featured Listing
@@ -41,10 +41,10 @@ export default function PropertyDetail() {
                 Silver Lake, Los Angeles
               </span>
             </div>
-            <h1 className="text-6xl md:text-8xl font-black tracking-[-0.05em] text-[#31332c] mb-6 leading-[0.9]" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <h1 className="text-4xl md:text-5xl font-serif text-gray-900 mb-2" style={{ fontFamily: 'Newsreader, serif' }}>
               THE MONOLITH HOUSE
             </h1>
-            <p className="text-4xl font-serif italic text-[#625d5b] leading-none">
+            <p className="text-2xl md:text-3xl font-serif text-gray-600 mb-6 italic" style={{ fontFamily: 'Newsreader, serif' }}>
               $4,850,000
             </p>
           </div>

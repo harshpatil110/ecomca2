@@ -128,6 +128,41 @@ export default function MarketingStrategyAdmin() {
           <p className="text-stone-500 italic">Expanding to 12 new regions by the end of Q4.</p>
         </div>
       </section>
+
+      {/* Brand Positioning & The Marketing Mix */}
+      <section className="mt-24 mb-12">
+        <div className="flex items-center justify-between mb-12">
+          <h3 className="text-4xl font-black tracking-tighter text-stone-900 uppercase" style={{ fontFamily: 'Inter, sans-serif' }}>Brand Positioning & The Marketing Mix</h3>
+          <div className="hidden lg:block h-px flex-1 bg-stone-200 ml-8"></div>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          <div className="bg-white p-8 lg:p-10 rounded-sm border border-stone-200 shadow-sm flex flex-col">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>Product & Price Strategy</p>
+            <h4 className="text-2xl italic text-stone-900 mb-6 font-serif leading-tight">Value & Exclusivity</h4>
+            <p className="text-stone-600 leading-relaxed text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+              Our pricing strategy relies on premium commission models justified by high-tier concierge services. The "Product" revolves around exclusively curated, high-end real estate rather than mass-market MLS listings, catering explicitly to our target demographic's desire for the exceptional.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 lg:p-10 rounded-sm border border-stone-200 shadow-sm flex flex-col">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>Place & Distribution</p>
+            <h4 className="text-2xl italic text-stone-900 mb-6 font-serif leading-tight">Curated Access</h4>
+            <p className="text-stone-600 leading-relaxed text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+              We distribute properties with utmost discretion. By transitioning from public listings to "Private, Invite-Only Viewings" for our ultra-luxury tier, we create immediate scarcity. This strategy directly drives demand among high-net-worth individuals by ensuring access itself becomes a coveted asset.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 lg:p-10 rounded-sm border border-stone-200 shadow-sm flex flex-col">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>Physical Evidence & Process</p>
+            <h4 className="text-2xl italic text-stone-900 mb-6 font-serif leading-tight">The Editorial Experience</h4>
+            <p className="text-stone-600 leading-relaxed text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+              The physical evidence of our service is manifested through high-fidelity 3D virtual tours, professional luxury property staging, and editorial-grade photography. This ensures the client's onboarding and purchasing process feels exactly as premium as the architectural masterworks they acquire.
+            </p>
+          </div>
+
+        </div>
+      </section>
     </div>
   );
 }

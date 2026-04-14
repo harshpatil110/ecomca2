@@ -5,8 +5,8 @@ const adminNav = [
   { icon: 'payments', label: 'Revenue', to: '/admin/revenue' },
   { icon: 'campaign', label: 'Marketing', to: '/admin/marketing' },
   { icon: 'group', label: 'CRM', to: '/admin/crm' },
-  { icon: 'apartment', label: 'Listings', to: '#' },
-  { icon: 'settings', label: 'Settings', to: '#' },
+  { icon: 'apartment', label: 'Listings', to: '/admin/listings' },
+  { icon: 'settings', label: 'Settings', to: '/admin/settings' },
 ];
 
 export default function AdminLayout({ children }) {
@@ -46,10 +46,10 @@ export default function AdminLayout({ children }) {
           })}
         </nav>
 
-        <button className="mt-auto bg-[#625d5b] text-[#fef6f2] py-3 px-4 rounded-sm font-bold tracking-tight flex items-center justify-center gap-2 hover:opacity-90 transition-opacity" style={{ fontFamily: 'Inter, sans-serif' }}>
+        <Link to="/admin/listings/new" className="mt-auto bg-[#625d5b] text-[#fef6f2] py-3 px-4 rounded-sm font-bold tracking-tight flex items-center justify-center gap-2 hover:opacity-90 transition-opacity" style={{ fontFamily: 'Inter, sans-serif' }}>
           <span className="material-symbols-outlined text-sm">add</span>
           New Property
-        </button>
+        </Link>
       </aside>
 
       {/* ── Top Bar ── */}
@@ -68,11 +68,11 @@ export default function AdminLayout({ children }) {
           <span className="text-stone-800 font-black tracking-tighter text-xl" style={{ fontFamily: 'Inter, sans-serif' }}>
             Admin Console
           </span>
-          <button className="material-symbols-outlined text-stone-500 hover:text-stone-900 transition-colors">notifications</button>
-          <button className="material-symbols-outlined text-stone-500 hover:text-stone-900 transition-colors">help</button>
-          <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center overflow-hidden">
+          <Link to="/admin/notifications" className="material-symbols-outlined text-stone-500 hover:text-stone-900 transition-colors">notifications</Link>
+          <Link to="/admin/help" className="material-symbols-outlined text-stone-500 hover:text-stone-900 transition-colors">help</Link>
+          <Link to="/admin/profile" className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center overflow-hidden hover:bg-stone-300 transition-colors">
             <span className="material-symbols-outlined text-stone-500 text-sm">person</span>
-          </div>
+          </Link>
         </div>
       </header>
 
