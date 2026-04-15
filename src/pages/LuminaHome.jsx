@@ -1,16 +1,20 @@
 import { useNavigate } from 'react-router-dom';
+import heroVideo from '../assets/landing video.mp4';
 
-export default function HomeTheArchive() {
+export default function LuminaHome() {
   const navigate = useNavigate();
   return (
     <div className="font-body text-on-surface">
       {/* ── Hero Section ── */}
       <section className="relative h-[870px] w-full overflow-hidden flex flex-col justify-end">
-        <div className="absolute inset-0 bg-stone-900/10 z-10" />
-        <img
-          alt="Luxury modern concrete villa exterior at dusk"
-          className="absolute inset-0 w-full h-full object-cover"
-          src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=2000"
+        <div className="absolute inset-0 bg-black/30 z-10"></div>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover -z-10"
+          src={heroVideo}
         />
         {/* Hero Search Overlay */}
         <div className="relative z-20 w-full max-w-6xl mx-auto px-8 mb-16">
@@ -45,7 +49,7 @@ export default function HomeTheArchive() {
         <div className="flex flex-col mb-16">
           <span className="text-xs uppercase tracking-[0.3em] text-stone-400 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>Volume 04</span>
           <h2 className="text-7xl md:text-8xl font-black tracking-[-0.04em] text-[#31332c] uppercase leading-[0.9]" style={{ fontFamily: 'Inter, sans-serif' }}>
-            Curated<br />Listings
+            Lumina<br />Portfolio
           </h2>
         </div>
 
@@ -74,17 +78,17 @@ export default function HomeTheArchive() {
         <div className="max-w-screen-2xl mx-auto px-8">
           <div className="max-w-3xl mb-24">
             <h2 className="text-5xl md:text-6xl italic text-[#31332c] leading-tight mb-8">
-              A New Standard in <br />Real Estate
+              A New Standard in <br />Direct Real Estate
             </h2>
             <p className="text-xl text-stone-500 leading-relaxed max-w-xl">
-              We don't just sell property; we curate environments. Our approach combines architectural historical context with modern investment strategy.
+              We don't just sell property; we curate environments. Lumina Realty combines architectural historical context with modern investment strategy.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
             {[
-              { icon: 'verified_user', title: 'Trust', body: 'A lineage of discretion and fiduciary excellence that spans decades of high-value transactions.' },
-              { icon: 'stars', title: 'Exclusivity', body: "Access to the off-market 'quiet listings' that never reach the public portals or databases." },
-              { icon: 'support_agent', title: 'Support', body: 'Comprehensive concierge service from initial appraisal to final interior staging and move-in.' },
+              { icon: 'verified_user', title: 'Trust', body: 'A lineage of discretion and fiduciary excellence that defines our direct-to-consumer model.' },
+              { icon: 'stars', title: 'Exclusivity', body: "Direct access to our owned architectural portfolio that never reaches public portals." },
+              { icon: 'support_agent', title: 'Concierge', body: 'Comprehensive in-house service from initial inquiry to final interior staging and move-in.' },
             ].map(({ icon, title, body }) => (
               <div key={title} className="space-y-6 border-l border-stone-200 pl-10">
                 <span className="material-symbols-outlined text-4xl text-stone-900">{icon}</span>
@@ -109,10 +113,10 @@ export default function HomeTheArchive() {
         <div className="space-y-12">
           <span className="text-xs uppercase tracking-[0.5em] text-stone-400" style={{ fontFamily: 'Inter, sans-serif' }}>The Journal</span>
           <h3 className="text-6xl font-black tracking-[-0.04em] leading-none uppercase" style={{ fontFamily: 'Inter, sans-serif' }}>
-            The Silent <br />Architect
+            Lumina <br />Perspectives
           </h3>
           <p className="text-2xl text-stone-600 italic leading-relaxed">
-            "Luxury is not the presence of noise, but the absence of friction. We look for homes that speak in whispers, yet command the entire room."
+            "Luxury is not the presence of noise, but the absence of friction. Lumina Reality looks for homes that speak in whispers."
           </p>
           <div className="pt-8">
             <button onClick={() => navigate('/explore')} className="text-stone-900 font-bold uppercase tracking-widest text-xs border-b-2 border-stone-900 pb-2 hover:opacity-50 transition-opacity" style={{ fontFamily: 'Inter, sans-serif' }}>

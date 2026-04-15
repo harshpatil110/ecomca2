@@ -18,29 +18,11 @@ export default function AuthSecurity() {
           <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
             <div>
               <label className="block text-[10px] font-bold tracking-widest text-[#5e6058] uppercase mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Email Address</label>
-              <input className="w-full bg-white border-b-1.5 border-transparent focus:border-[#625d5b] focus:ring-0 rounded-sm p-4 text-lg transition-all" placeholder="name@archive.com" type="email" />
+              <input className="w-full bg-white border-b-1.5 border-transparent focus:border-[#625d5b] focus:ring-0 rounded-sm p-4 text-lg transition-all" placeholder="name@luminarealty.com" type="email" />
             </div>
             <div>
               <label className="block text-[10px] font-bold tracking-widest text-[#5e6058] uppercase mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Password</label>
               <input className="w-full bg-white border-b-1.5 border-transparent focus:border-[#625d5b] focus:ring-0 rounded-sm p-4 text-lg transition-all" placeholder="••••••••" type="password" />
-            </div>
-            
-            <div>
-              <label className="block text-[10px] font-bold tracking-widest text-[#5e6058] uppercase mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>Account Type</label>
-              <div className="flex gap-4">
-                <label className="flex-1 cursor-pointer group">
-                  <input defaultChecked className="hidden peer" name="role" type="radio" value="buyer" />
-                  <div className="p-4 bg-white border-none peer-checked:bg-[#e9e1dd] text-center rounded-sm transition-colors group-hover:bg-[#e8e9e0]">
-                    <span className="text-xs font-bold tracking-widest uppercase" style={{ fontFamily: 'Inter, sans-serif' }}>Buyer</span>
-                  </div>
-                </label>
-                <label className="flex-1 cursor-pointer group">
-                  <input className="hidden peer" name="role" type="radio" value="agent" />
-                  <div className="p-4 bg-white border-none peer-checked:bg-[#e9e1dd] text-center rounded-sm transition-colors group-hover:bg-[#e8e9e0]">
-                    <span className="text-xs font-bold tracking-widest uppercase" style={{ fontFamily: 'Inter, sans-serif' }}>Agent</span>
-                  </div>
-                </label>
-              </div>
             </div>
             
             <div className="flex items-center justify-between pt-4">
@@ -57,7 +39,7 @@ export default function AuthSecurity() {
           
           <div className="mt-16 pt-8 border-t border-[#b1b3a9]/20">
             <p className="text-[#5e6058] italic">
-              New to THE ARCHIVE? <Link to="#" className="text-[#31332c] not-italic font-bold hover:underline">Apply for membership.</Link>
+              New to LUMINA REALTY? <Link to="#" className="text-[#31332c] not-italic font-bold hover:underline">Apply for membership.</Link>
             </p>
           </div>
         </div>
@@ -77,10 +59,10 @@ export default function AuthSecurity() {
           <div className="space-y-12">
             {[
               { num: '01', title: 'bcrypt', desc: 'Advanced salted hashing protocols ensure your private access credentials remain mathematically inaccessible.' },
-              { num: '02', title: 'JWT', desc: 'Stateless JSON Web Tokens facilitate secure, encrypted session management across our global infrastructure.' },
+              { num: '02', title: 'JWT', desc: 'Stateless JSON Web Tokens facilitate secure, encrypted session management across our global internal infrastructure.' },
               { num: '03', title: 'Data Validation', desc: 'Rigorous server-side sanitization layers protect the integrity of our architectural data and user privacy.' },
-              { num: '04', title: 'Role-Based Access Control (RBAC)', desc: 'Our architecture employs strict RBAC protocols. Buyer, Seller, and Agent environments are logically segregated at the database level, ensuring users can only access data and execute actions explicitly authorized for their specific role, preventing privilege escalation.' },
-              { num: '05', title: 'Zero-Trust MFA & Data Compliance', desc: 'We enforce a Zero-Trust security model featuring mandatory Multi-Factor Authentication (MFA) for administrative and agent access. All Personally Identifiable Information (PII) is secured via AES-256 Encryption at Rest, ensuring rigorous compliance with global data privacy frameworks including GDPR and the DPDPA.' }
+              { num: '04', title: 'Role-Based Access Control (RBAC)', desc: 'Our architecture employs strict RBAC protocols. Internal Administration and Member environments are logically segregated at the database level, ensuring users can only access data and execute actions explicitly authorized for their specific role.' },
+              { num: '05', title: 'Zero-Trust MFA & Data Compliance', desc: 'We enforce a Zero-Trust security model featuring mandatory Multi-Factor Authentication (MFA) for executive and administrative access. All Personally Identifiable Information (PII) is secured via AES-256 Encryption at Rest, ensuring rigorous compliance with global data privacy frameworks including GDPR and the DPDPA.' }
             ].map(({ num, title, desc }) => (
               <div key={num} className="flex items-start gap-6">
                 <span className="font-black text-4xl text-[#797c73]/30" style={{ fontFamily: 'Inter, sans-serif' }}>{num}</span>

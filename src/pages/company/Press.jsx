@@ -12,7 +12,7 @@ export default function Press() {
           <h2 className="text-sm font-black tracking-[0.2em] uppercase text-stone-900 mb-10 border-b border-stone-200 pb-4" style={{ fontFamily: 'Inter, sans-serif' }}>Recent Releases</h2>
           <div className="space-y-8">
             {[
-              { date: 'Oct 14, 2025', title: 'The Archive Announces Record-Breaking Sale of "The Monolith House"' },
+              { date: 'Oct 14, 2025', title: 'Lumina Realty Announces Record-Breaking Sale of "The Monolith House"' },
               { date: 'Sep 02, 2025', title: 'Expanding Operations: New Presence in Greenwich and The Hamptons' },
               { date: 'Jul 18, 2025', title: 'The Architectural Digest Feature: Brutalism in Modern Luxury' },
               { date: 'May 04, 2025', title: 'Annual Market Report: Assessing the Shift Toward Sanctuary Architecture' },
@@ -41,7 +41,7 @@ export default function Press() {
           
           <div className="mt-12 text-sm text-stone-500 font-serif leading-relaxed">
             <p>For all press inquiries, secure interviews, or to request high-resolution property photography, please contact:</p>
-            <p className="mt-4 font-bold text-stone-900 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>press@thearchive.realty</p>
+            <p className="mt-4 font-bold text-stone-900 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>press@luminarealty.com</p>
           </div>
         </div>
       </div>

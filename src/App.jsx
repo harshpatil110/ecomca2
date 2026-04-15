@@ -3,7 +3,7 @@ import MainLayout from './layouts/MainLayout';
 import AdminLayout from './layouts/AdminLayout';
 
 // Public Pages
-import HomeTheArchive from './pages/HomeTheArchive';
+import LuminaHome from './pages/LuminaHome';
 import ExploreProperties from './pages/ExploreProperties';
 import PropertyDetail from './pages/PropertyDetail';
 import AuthSecurity from './pages/AuthSecurity';
@@ -33,7 +33,7 @@ function App() {
     <Router>
       <Routes>
         {/* Public Routes with MainLayout */}
-        <Route path="/" element={<MainLayout><HomeTheArchive /></MainLayout>} />
+        <Route path="/" element={<MainLayout><LuminaHome /></MainLayout>} />
         <Route path="/explore" element={<MainLayout><ExploreProperties /></MainLayout>} />
         <Route path="/property/:id" element={<MainLayout><PropertyDetail /></MainLayout>} />
         <Route path="/auth" element={<MainLayout><AuthSecurity /></MainLayout>} />

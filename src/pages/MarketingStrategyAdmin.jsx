@@ -1,3 +1,5 @@
+import igReelVideo from '../assets/instagram reel.mp4';
+
 export default function MarketingStrategyAdmin() {
   return (
     <div className="pt-8 pb-20 px-12 max-w-7xl">
@@ -108,18 +110,36 @@ export default function MarketingStrategyAdmin() {
 
       {/* Visual Insights Grid */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="md:col-span-2 bg-stone-900 text-stone-50 p-12 rounded-sm flex flex-col justify-between h-[400px] relative overflow-hidden group">
-          <div className="relative z-10">
-            <h5 className="font-black text-4xl tracking-tightest mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>AESTHETIC <br />CONVERSION</h5>
-            <p className="italic text-stone-400 max-w-sm">Properties featuring editorial-grade photography see a 40% higher engagement rate across all channels.</p>
+        <div className="md:col-span-2 bg-stone-900 text-stone-50 rounded-sm grid grid-cols-1 md:grid-cols-2 h-[450px] overflow-hidden group border border-stone-800 shadow-xl">
+          {/* Left Column: Content */}
+          <div className="p-10 lg:p-14 flex flex-col justify-center space-y-8">
+            <div>
+              <h5 className="font-black text-4xl lg:text-5xl tracking-tightest mb-4 uppercase leading-[0.9]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                AESTHETIC <br />CONVERSION
+              </h5>
+              <p className="italic text-stone-400 text-lg leading-relaxed pr-6">
+                Properties featuring editorial-grade photography see a <span className="text-stone-200 font-bold">40% higher engagement</span> rate across all digital channels.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-4" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <button className="bg-stone-50 text-stone-900 px-8 py-3 text-xs font-black uppercase tracking-widest rounded-sm hover:bg-stone-200 transition-colors">
+                View Insights
+              </button>
+              <button className="border border-stone-700 text-stone-400 px-8 py-3 text-xs font-black uppercase tracking-widest rounded-sm hover:bg-stone-800 hover:text-stone-100 transition-all">
+                Media Library
+              </button>
+            </div>
           </div>
-          <div className="relative z-10 flex gap-4" style={{ fontFamily: 'Inter, sans-serif' }}>
-            <button className="bg-stone-50 text-stone-900 px-6 py-2 text-xs font-black uppercase tracking-widest rounded-sm">View Insights</button>
-            <button className="border border-stone-700 text-stone-400 px-6 py-2 text-xs font-black uppercase tracking-widest rounded-sm hover:bg-stone-800">Media Library</button>
-          </div>
-          {/* Abstract Deco Image */}
-          <div className="absolute right-0 top-0 w-1/2 h-full">
-            <img alt="Interior Design" className="w-full h-full object-cover opacity-40 mix-blend-luminosity group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsDB8QtWr3Wt-Q5us7DDAH1UPGvPRiweWHvQugWpR5RWTFSfV8EGVyJqkeADxAEK3RbYKudRdPdFQxBqGYt4izD_OSKvaIK0tLA7djGwFglKQj6jgKl_C4WzTpjYz7dBoHXvmMr4xWsZLKzWT1a061iD9H_yd1E_iKEHeFH2ZRPsCbPmRJtysRNZycXxkfrfkErEU6dwOt1t4tcDPN0jEbQjCObmHlftYvNR2LsgjhFmBbMVVqzpsNNQabbxeL0V4DGoOMI2g4UiLt" />
+          
+          {/* Right Column: Editorial Media Asset */}
+          <div className="relative h-full overflow-hidden">
+            <img 
+              alt="High-end editorial architecture" 
+              className="w-full h-full object-cover shadow-2xl group-hover:scale-110 transition-transform duration-[2000ms] ease-out" 
+              src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80" 
+            />
+            {/* Subtle Gradient Overlay for Content Transition */}
+            <div className="absolute inset-0 bg-gradient-to-r from-stone-900/40 to-transparent pointer-events-none md:block hidden" />
           </div>
         </div>
         <div className="bg-[#f5f4ed] p-12 rounded-sm flex flex-col justify-center text-center">
@@ -138,10 +158,10 @@ export default function MarketingStrategyAdmin() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           <div className="bg-white p-8 lg:p-10 rounded-sm border border-stone-200 shadow-sm flex flex-col">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>Product & Price Strategy</p>
-            <h4 className="text-2xl italic text-stone-900 mb-6 font-serif leading-tight">Value & Exclusivity</h4>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>Project & Pricing Strategy</p>
+            <h4 className="text-2xl italic text-stone-900 mb-6 font-serif leading-tight">Value & Direct Engagement</h4>
             <p className="text-stone-600 leading-relaxed text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
-              Our pricing strategy relies on premium commission models justified by high-tier concierge services. The "Product" revolves around exclusively curated, high-end real estate rather than mass-market MLS listings, catering explicitly to our target demographic's desire for the exceptional.
+              Our pricing strategy relies on the direct realization of architectural value. By bypassing the third-party commission model, we ensure that 100% of the investment is tied to the physical asset and our in-house concierge services. Our "Product" is exclusively owned and curated inventory.
             </p>
           </div>
 
@@ -163,6 +183,33 @@ export default function MarketingStrategyAdmin() {
 
         </div>
       </section>
+
+      {/* Social Media & Viral Reach Section */}
+      <section className="mt-16 mb-8 pt-12 border-t border-stone-200/60">
+        <div className="flex flex-col items-center text-center mb-12">
+          <h3 className="text-4xl font-serif italic text-stone-900 mb-4" style={{ fontFamily: 'Newsreader, serif' }}>Social Media & Viral Reach</h3>
+          <p className="text-stone-600 leading-relaxed text-sm max-w-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Showcasing our short-form vertical content strategy (Instagram Reels/TikTok) designed to drive organic engagement and showcase our curated aesthetic.
+          </p>
+        </div>
+
+        <div className="bg-white p-8 lg:p-12 rounded-sm border border-stone-200 shadow-sm flex flex-col items-center">
+          <div className="aspect-[9/16] w-full max-w-[320px] mx-auto rounded-2xl overflow-hidden border border-gray-200 shadow-md bg-stone-100 flex items-center justify-center">
+            <video
+              className="w-full h-full object-cover"
+              controls
+              playsInline
+              loop
+              muted
+              src={igReelVideo}
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }
+

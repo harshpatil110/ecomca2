@@ -55,7 +55,7 @@ export default function PropertyDetail() {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder_key',
       amount: 83030000, // $10,000 USD converted roughly to INR in paise for processing
       currency: 'INR',
-      name: 'The Archive',
+      name: 'Lumina Realty',
       description: 'Booking Deposit - The Monolith House',
       prefill: {
         name: name,
@@ -215,14 +215,14 @@ export default function PropertyDetail() {
               </div>
             </div>
             
-            {/* Agent Card */}
+            {/* In-House Concierge Card */}
             <div className="mt-8 flex items-center gap-4 px-2">
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-stone-200 grayscale">
-                <img alt="Real estate agent" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNF7q3MVLUyoZn2_QHgHSEQb2_yQyqzQqapiY4tbXR-olEm1oBfx_8lj9wSE1t9Ww02ShuEC2EpMF0Ux44gkdKhpsO5020Z0k4mBPCYUjM27rZh0KOHLDSkGPX0mqVQFy5G77HqAAGi0UVA-J148bcPof8Yf6b0wpz15opORFkxVnc_mRV-BqCsBtWwOxfcVDAh3bHel-lWNwQh8WzPL9d6PjflpuJq9odDaE7rT3QDAvKj9WdNzD_egBM7Uv3WE77e9T4crvPPmCZ" />
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-stone-200 flex items-center justify-center">
+                <span className="material-symbols-outlined text-stone-500">architecture</span>
               </div>
               <div>
-                <p className="text-[10px] font-black tracking-widest uppercase text-stone-900" style={{ fontFamily: 'Inter, sans-serif' }}>Elias Sterling</p>
-                <p className="text-[11px] text-stone-400 font-serif italic">Principal Architect & Broker</p>
+                <p className="text-[10px] font-black tracking-widest uppercase text-stone-900" style={{ fontFamily: 'Inter, sans-serif' }}>Lumina Concierge</p>
+                <p className="text-[11px] text-stone-400 font-serif italic">Exclusive Direct Purchase Team</p>
               </div>
             </div>
           </div>
@@ -300,7 +300,7 @@ export default function PropertyDetail() {
                 <div className="bg-[#fbf9f4] p-6 border border-stone-200 rounded-sm">
                   <h3 className="text-xs font-black tracking-widest uppercase text-stone-900 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>Escrow Ledger Details</h3>
                   <div className="space-y-3 text-sm font-serif text-stone-700">
-                    <p><span className="font-semibold text-stone-900 font-sans tracking-wide">Beneficiary:</span> The Archive Architectural Realty Escrow</p>
+                    <p><span className="font-semibold text-stone-900 font-sans tracking-wide">Beneficiary:</span> Lumina Realty Escrow</p>
                     <p><span className="font-semibold text-stone-900 font-sans tracking-wide">Bank Name:</span> First Republic / Standard Chartered (Placeholder)</p>
                     <p><span className="font-semibold text-stone-900 font-sans tracking-wide">Account Number:</span> 0001992847563</p>
                     <p><span className="font-semibold text-stone-900 font-sans tracking-wide">IFSC / Routing:</span> ARCH0001042</p>

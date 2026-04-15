@@ -37,7 +37,7 @@ export default function UserProfileAdmin() {
 
           <div className="flex flex-col space-y-2">
             <label className="text-[10px] font-bold tracking-widest uppercase text-stone-500">Email Address</label>
-            <input type="email" className="bg-[#fbf9f4] border border-stone-200 rounded-sm px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-400 transition-colors text-sm" defaultValue="e.agent@thearchive.realty" />
+            <input type="email" className="bg-[#fbf9f4] border border-stone-200 rounded-sm px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-400 transition-colors text-sm" defaultValue="executive@luminarealty.com" />
           </div>
 
           <div className="flex flex-col space-y-2">

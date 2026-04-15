@@ -10,14 +10,14 @@ export default function PrivacyPolicy() {
         <section>
           <h2 className="text-sm font-black tracking-[0.2em] uppercase text-stone-900 mb-4 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>1. Data Collection</h2>
           <p>
-            The Archive Architectural Realty ("we", "our", or "us") respects your privacy and is committed to protecting your personal data. We collect information you provide directly to us when inquiring about properties or signing up for our editorial newsletter. This includes contact details and property preferences.
+            Lumina Realty ("we", "our", or "us") respects your privacy and is committed to protecting your personal data. We collect information you provide directly to us when inquiring about our direct portfolio or signing up for our architectural newsletter. This includes contact details and property preferences.
           </p>
         </section>
         
         <section>
           <h2 className="text-sm font-black tracking-[0.2em] uppercase text-stone-900 mb-4 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>2. Use of Information</h2>
           <p>
-            Your information is utilized strictly to curate high-end property matches, improve our service offerings, and communicate securely with our brokers. We do not sell, rent, or lease our client lists to third parties under any circumstances.
+            Your information is utilized strictly to curate high-end property matches, improve our service offerings, and communicate securely with our in-house sales team. We do not sell, rent, or lease our client lists to third parties under any circumstances.
           </p>
         </section>
 

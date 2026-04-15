@@ -25,8 +25,8 @@ export default function Contact() {
             <div>
               <h2 className="text-[10px] font-black tracking-[0.2em] uppercase text-stone-400 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>Direct Inquiries</h2>
               <div className="space-y-2 text-lg text-stone-800 font-serif">
-                <p>Private Client: <span className="text-stone-500">inquiries@thearchive.realty</span></p>
-                <p>Press & Media: <span className="text-stone-500">press@thearchive.realty</span></p>
+                <p>Private Client: <span className="text-stone-500">inquiries@luminarealty.com</span></p>
+                <p>Press & Media: <span className="text-stone-500">press@luminarealty.com</span></p>
                 <p className="pt-2">Reception: <span className="text-stone-500">+1 (310) 555-0198</span></p>
               </div>
             </div>

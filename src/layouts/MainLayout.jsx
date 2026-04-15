@@ -16,7 +16,7 @@ export default function MainLayout({ children }) {
       <header className="bg-[#fbf9f4] border-b border-stone-200/30 sticky top-0 z-50">
         <div className="flex justify-between items-center w-full px-8 py-6 max-w-screen-2xl mx-auto">
           <Link to="/" className="text-lg font-black tracking-tighter text-stone-900 uppercase" style={{ fontFamily: 'Inter, sans-serif' }}>
-            THE ARCHIVE
+            LUMINA REALTY
           </Link>
 
           <nav className="hidden md:flex items-center gap-10" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -58,7 +58,7 @@ export default function MainLayout({ children }) {
       <footer className="bg-[#fbf9f4] border-t border-stone-200/40 py-16">
         <div className="flex flex-col md:flex-row justify-between items-center px-12 gap-8 max-w-screen-2xl mx-auto">
           <div className="text-md font-black tracking-tighter text-stone-400 uppercase" style={{ fontFamily: 'Inter, sans-serif' }}>
-            THE ARCHIVE
+            LUMINA REALTY
           </div>
           <div className="flex flex-wrap gap-8 md:gap-12 text-sm italic text-stone-500" style={{ fontFamily: 'Newsreader, serif' }}>
             {[
@@ -73,7 +73,7 @@ export default function MainLayout({ children }) {
             ))}
           </div>
           <div className="text-xs italic text-stone-400 text-center md:text-right" style={{ fontFamily: 'Newsreader, serif' }}>
-            © 2024 THE ARCHIVE ARCHITECTURAL REALTY. ALL RIGHTS RESERVED.
+            © 2024 LUMINA REALTY. ALL RIGHTS RESERVED.
           </div>
         </div>
       </footer>
