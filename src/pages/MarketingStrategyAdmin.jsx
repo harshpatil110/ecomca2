@@ -61,7 +61,7 @@ export default function MarketingStrategyAdmin() {
             </thead>
             <tbody className="text-stone-600">
               {[
-                { channel: 'Google Ads', strategy: 'PPC Strategy', reach: '120k', reachLabel: 'impressions', eng: '$5k Spend', isEngBadge: true, conv: '340', convLabel: 'conversions' },
+                { channel: 'Google Ads', strategy: 'PPC Strategy', reach: '120k', reachLabel: 'impressions', eng: '₹5k Spend', isEngBadge: true, conv: '340', convLabel: 'conversions' },
                 { channel: 'Social Media/TikTok', strategy: 'Vertical Video', reach: '500k', reachLabel: 'views', eng: '4.2%', engLabel: 'CTR', convText: '+18% Viral Lift', convTextClass: 'text-[#46617f] font-bold' },
                 { channel: 'Email Newsletter', strategy: 'Retention', reach: '15k', reachLabel: 'subs', eng: '28%', engLabel: 'open rate', convText: 'Direct Response', convTextClass: 'text-stone-900 font-bold' },
                 { channel: 'SEO/Content Marketing', strategy: 'Organic Growth', reach: '8.4k', reachLabel: 'unique visits', eng: '04:12', engLabel: 'avg time', convNode: (

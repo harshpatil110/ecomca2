@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import AdminLayout from './layouts/AdminLayout';
 
@@ -44,6 +44,7 @@ function App() {
         <Route path="/press" element={<MainLayout><Press /></MainLayout>} />
         <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
         {/* Admin Routes with AdminLayout */}
+        <Route path="/admin" element={<Navigate replace to="/admin/overview" />} />
         <Route path="/admin/crm" element={<AdminLayout><CrmStrategyAdmin /></AdminLayout>} />
         <Route path="/admin/marketing" element={<AdminLayout><MarketingStrategyAdmin /></AdminLayout>} />
         <Route path="/admin/revenue" element={<AdminLayout><RevenueModelAdmin /></AdminLayout>} />

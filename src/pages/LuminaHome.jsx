@@ -55,9 +55,9 @@ export default function LuminaHome() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
-            { price: '$4,250,000', location: '214 Silverlake Terrace, Los Angeles CA', src: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800', offset: '', alt: 'Modern minimalist living room featuring warm beige tones and luxury furniture' },
-            { price: '$2,890,000', location: 'The Glass Pavilion, Joshua Tree', src: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=800', offset: 'md:translate-y-12', alt: 'Exterior view of a brutalist glass pavilion surrounded by nature' },
-            { price: '$6,100,000', location: '88 Brutalist Row, Greenwich CT', src: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&q=80&w=800', offset: '', alt: 'High-end luxury kitchen cast in concrete and dark oak' },
+            { price: '₹4,250,000', location: '214 Silverlake Terrace, Los Angeles CA', src: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800', offset: '', alt: 'Modern minimalist living room featuring warm beige tones and luxury furniture' },
+            { price: '₹2,890,000', location: 'The Glass Pavilion, Joshua Tree', src: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=800', offset: 'md:translate-y-12', alt: 'Exterior view of a brutalist glass pavilion surrounded by nature' },
+            { price: '₹6,100,000', location: '88 Brutalist Row, Greenwich CT', src: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&q=80&w=800', offset: '', alt: 'High-end luxury kitchen cast in concrete and dark oak' },
           ].map(({ price, location, src, offset, alt }, i) => (
             <div key={i} onClick={() => navigate('/property/1')} className={`group cursor-pointer ${offset}`}>
               <div className="aspect-[4/5] overflow-hidden mb-6 relative bg-stone-100 border border-stone-200">

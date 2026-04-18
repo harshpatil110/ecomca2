@@ -53,7 +53,7 @@ export default function PropertyDetail() {
     // REMINDER: Ensure VITE_RAZORPAY_KEY_ID is added to your root .env file.
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder_key',
-      amount: 83030000, // $10,000 USD converted roughly to INR in paise for processing
+      amount: 83030000, // ₹10,000 USD converted roughly to INR in paise for processing
       currency: 'INR',
       name: 'Lumina Realty',
       description: 'Booking Deposit - The Monolith House',
@@ -137,7 +137,7 @@ export default function PropertyDetail() {
               THE MONOLITH HOUSE
             </h1>
             <p className="text-2xl md:text-3xl font-serif text-gray-600 mb-6 italic" style={{ fontFamily: 'Newsreader, serif' }}>
-              $4,850,000
+              ₹4,850,000
             </p>
           </div>
           <div className="max-w-2xl">
@@ -257,7 +257,7 @@ export default function PropertyDetail() {
                   className="w-full text-left p-6 border border-stone-200 hover:border-stone-900 rounded-sm transition-colors group"
                 >
                   <h3 className="text-lg font-bold text-stone-900 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Booking Deposit (Instant)</h3>
-                  <p className="text-sm font-serif italic text-stone-500">Secure this property immediately with a refundable $10,000 deposit via Razorpay (Cards, Netbanking, UPI).</p>
+                  <p className="text-sm font-serif italic text-stone-500">Secure this property immediately with a refundable ₹10,000 deposit via Razorpay (Cards, Netbanking, UPI).</p>
                 </button>
                 <button 
                   onClick={() => setPaymentMethod('wire')}
@@ -275,7 +275,7 @@ export default function PropertyDetail() {
                 <div className="bg-[#fbf9f4] p-8 border border-stone-200 text-center rounded-sm">
                   <span className="material-symbols-outlined text-4xl text-stone-800 mb-4">credit_card</span>
                   <h3 className="text-xl font-serif italic text-stone-900 mb-2">Instant Booking Deposit</h3>
-                  <p className="text-sm text-stone-600 mb-8 max-w-sm mx-auto">You will be redirected securely to complete your $10,000 deposit.</p>
+                  <p className="text-sm text-stone-600 mb-8 max-w-sm mx-auto">You will be redirected securely to complete your ₹10,000 deposit.</p>
                   <button 
                     disabled={isPaymentLoading}
                     onClick={handleRazorpayPayment} 

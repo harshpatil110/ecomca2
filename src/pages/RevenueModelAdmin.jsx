@@ -10,8 +10,8 @@ export default function RevenueModelAdmin() {
       {/* Top KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
         {[
-          { label: 'Total Sales Volume', value: '$842,000', icon: 'payments' },
-          { label: 'Owned Asset Value', value: '$12.4M', icon: 'domain' },
+          { label: 'Total Sales Volume', value: '₹842,000', icon: 'payments' },
+          { label: 'Owned Asset Value', value: '₹12.4M', icon: 'domain' },
           { label: 'Capital Gains YTD', value: '+18%', icon: 'trending_up', valClass: 'text-[#46617f]' },
         ].map(({ label, value, icon, valClass }, i) => (
           <div key={i} className="bg-white p-8 rounded-sm shadow-sm relative overflow-hidden group">
@@ -34,7 +34,7 @@ export default function RevenueModelAdmin() {
               <h4 className="text-3xl font-black tracking-tighter text-stone-900" style={{ fontFamily: 'Inter, sans-serif' }}>Direct Inventory Sales</h4>
             </div>
             <div className="text-right">
-              <span className="text-2xl font-black tracking-tighter block" style={{ fontFamily: 'Inter, sans-serif' }}>$542,200</span>
+              <span className="text-2xl font-black tracking-tighter block" style={{ fontFamily: 'Inter, sans-serif' }}>₹542,200</span>
               <span className="font-bold text-xs text-stone-400" style={{ fontFamily: 'Inter, sans-serif' }}>Current Month realization</span>
             </div>
           </div>
@@ -63,7 +63,7 @@ export default function RevenueModelAdmin() {
             <h4 className="text-xl font-black tracking-tighter text-stone-900 mb-2 leading-tight" style={{ fontFamily: 'Inter, sans-serif' }}>Premium Concierge Services</h4>
           </div>
           <div>
-            <span className="text-3xl font-black tracking-tighter block mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>$42,400</span>
+            <span className="text-3xl font-black tracking-tighter block mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>₹42,400</span>
             <div className="flex items-center text-[#46617f] text-xs font-bold" style={{ fontFamily: 'Inter, sans-serif' }}>
               <span className="material-symbols-outlined text-sm mr-1">arrow_upward</span>
               +8.2%
@@ -84,7 +84,7 @@ export default function RevenueModelAdmin() {
             </div>
           </div>
           <div className="mt-4">
-            <span className="text-3xl font-black tracking-tighter block mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>$258,000</span>
+            <span className="text-3xl font-black tracking-tighter block mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>₹258,000</span>
             <span className="font-bold text-[10px] text-stone-400 uppercase tracking-widest" style={{ fontFamily: 'Inter, sans-serif' }}>Portfolio appreciation trajectory</span>
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function RevenueModelAdmin() {
             <h4 className="text-xl font-black tracking-tighter text-stone-900 mb-2 leading-tight" style={{ fontFamily: 'Inter, sans-serif' }}>Upcoming Development ROI</h4>
           </div>
           <div>
-            <span className="text-3xl font-black tracking-tighter block mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>$112,000</span>
+            <span className="text-3xl font-black tracking-tighter block mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>₹112,000</span>
             <div className="flex items-center text-[#46617f] text-xs font-bold" style={{ fontFamily: 'Inter, sans-serif' }}>
               <span className="material-symbols-outlined text-sm mr-1">arrow_upward</span>
               +12.4%
@@ -111,7 +111,7 @@ export default function RevenueModelAdmin() {
             <h4 className="text-xl font-black tracking-tighter text-stone-900 mb-2 leading-tight" style={{ fontFamily: 'Inter, sans-serif' }}>Architectural Media Licensing</h4>
           </div>
           <div>
-            <span className="text-3xl font-black tracking-tighter block mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>$18,500</span>
+            <span className="text-3xl font-black tracking-tighter block mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>₹18,500</span>
             <div className="flex items-center text-[#46617f] text-xs font-bold" style={{ fontFamily: 'Inter, sans-serif' }}>
               <span className="material-symbols-outlined text-sm mr-1">arrow_upward</span>
               +3.2%

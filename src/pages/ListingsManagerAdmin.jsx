@@ -7,10 +7,10 @@ export default function ListingsManagerAdmin() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const listings = [
-    { id: 1, name: 'The Monolith House', city: 'Los Angeles', price: '$4,850,000', status: 'Exclusive', views: '2.4k' },
-    { id: 2, name: 'Glass Pavilion', city: 'Hollywood Hills', price: '$6,200,000', status: 'Draft', views: '-' },
-    { id: 3, name: 'Brutalist Villa', city: 'Malibu', price: '$8,100,000', status: 'Sold', views: '14.2k' },
-    { id: 4, name: 'Concrete Sanctuary', city: 'Joshua Tree', price: '$2,900,000', status: 'Exclusive', views: '1.1k' },
+    { id: 1, name: 'The Monolith House', city: 'Los Angeles', price: '₹4,850,000', status: 'Exclusive', views: '2.4k' },
+    { id: 2, name: 'Glass Pavilion', city: 'Hollywood Hills', price: '₹6,200,000', status: 'Draft', views: '-' },
+    { id: 3, name: 'Brutalist Villa', city: 'Malibu', price: '₹8,100,000', status: 'Sold', views: '14.2k' },
+    { id: 4, name: 'Concrete Sanctuary', city: 'Joshua Tree', price: '₹2,900,000', status: 'Exclusive', views: '1.1k' },
   ];
 
   return (

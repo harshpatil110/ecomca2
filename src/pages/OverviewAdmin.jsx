@@ -15,7 +15,7 @@ export default function OverviewAdmin() {
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
         {[
-          { label: 'Total Revenue (Mtd)', value: '$12.4M', change: '+14%' },
+          { label: 'Total Revenue (Mtd)', value: '₹12.4M', change: '+14%' },
           { label: 'Active Exclusive Listings', value: '42', change: '+2' },
           { label: 'New Client Inquiries', value: '128', change: '+22%' },
         ].map((kpi, i) => (

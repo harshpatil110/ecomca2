@@ -6,14 +6,14 @@ export default function SavedProperties() {
       id: "1",
       title: "THE MONOLITH HOUSE",
       location: "Silver Lake, Los Angeles",
-      price: "$4,850,000",
+      price: "₹4,850,000",
       img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800"
     },
     {
       id: "2",
       title: "THE GLASS PAVILION",
       location: "Hollywood Hills, Los Angeles",
-      price: "$6,200,000",
+      price: "₹6,200,000",
       img: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=800"
     }
   ];

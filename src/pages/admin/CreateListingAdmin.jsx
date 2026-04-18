@@ -28,7 +28,7 @@ export default function CreateListingAdmin() {
             <div className="flex flex-col space-y-2 relative">
               <label className="text-[10px] font-bold tracking-widest uppercase text-stone-500">List Price</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">$</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">₹</span>
                 <input type="text" className="w-full bg-[#fbf9f4] border border-stone-200 rounded-sm pl-8 pr-4 py-3 text-stone-900 focus:outline-none focus:border-stone-400 transition-colors text-sm" placeholder="4,850,000" />
               </div>
             </div>
