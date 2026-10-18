@@ -1,0 +1,14 @@
+{
+  "contractAddress": "0x569F33bcd31Aec0eC4c5335A6393E87B3E65b7E5",
+  "chainId": 11155111,
+  "createdAt": "2026-10-18T17:10:20.959Z",
+  "lastUpdated": "2026-10-18T17:56:30.596Z",
+  "summary": {
+    "total": 0,
+    "confirmed": 0,
+    "pending": 0,
+    "failed": 0,
+    "skipped": 0
+  },
+  "registrations": {}
+}

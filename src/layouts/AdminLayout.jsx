@@ -6,6 +6,7 @@ const adminNav = [
   { icon: 'campaign', label: 'Marketing', to: '/admin/marketing' },
   { icon: 'group', label: 'CRM', to: '/admin/crm' },
   { icon: 'apartment', label: 'Listings', to: '/admin/listings' },
+  { icon: 'token', label: 'Blockchain', to: '/admin/blockchain' },
   { icon: 'settings', label: 'Settings', to: '/admin/settings' },
 ];
 

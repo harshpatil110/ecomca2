@@ -7,13 +7,20 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node scripts/test-features.js",
+    "demo:generate": "node scripts/generate-demo-properties.js",
+    "demo:generate:dry": "node scripts/generate-demo-properties.js --dry-run",
+    "sepolia:register:dry": "node scripts/register-demo-sepolia.js --dry-run",
+    "sepolia:register:test": "node scripts/register-demo-sepolia.js --test 2",
+    "sepolia:check-funding": "node scripts/check-sepolia-funding.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router-dom": "^7.14.0"
+    "react-router-dom": "^7.14.0",
+    "ethers": "^6.15.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

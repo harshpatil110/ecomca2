@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function CrmStrategyAdmin() {
-  const [tourRequests, setTourRequests] = useState([]);
-
-  useEffect(() => {
+  const [tourRequests, setTourRequests] = useState(() => {
     let leads = JSON.parse(localStorage.getItem('crm_tour_requests') || '[]');
     if (leads.length === 0) {
       const mockLead = {
@@ -19,8 +17,9 @@ export default function CrmStrategyAdmin() {
       leads = [mockLead];
       localStorage.setItem('crm_tour_requests', JSON.stringify(leads));
     }
-    setTourRequests(leads);
-  }, []);
+    return leads;
+  });
+
 
   const markAsContacted = (id) => {
     const updated = tourRequests.filter(req => req.id !== id);

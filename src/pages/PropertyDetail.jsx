@@ -1,5 +1,7 @@
+import PropertyBlockchainVerification from '../blockchain/PropertyBlockchainVerification';
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getListingById } from '../services/listingsStore';
 
 const loadRazorpayScript = () => {
   return new Promise((resolve) => {
@@ -13,6 +15,16 @@ const loadRazorpayScript = () => {
 
 export default function PropertyDetail() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const listing = useMemo(() => getListingById(id), [id]);
+
+  const propertyTitle = listing?.name || 'The Lumina Heights';
+  const propertyLocation = listing?.location || 'Plot 12, Financial District, Hyderabad';
+  const propertyImage = listing?.src || '/brutalist_exterior.png';
+  const blockchainId = listing?.blockchainPropertyId ? String(listing.blockchainPropertyId).trim() : null;
+
+  // Blockchain Real-Time Verification Status ('idle' | 'loading' | 'verified' | 'unverified' | 'unavailable')
+  const [verificationStatus, setVerificationStatus] = useState('idle');
 
   // Payment State
   const [isPaymentLoading, setIsPaymentLoading] = useState(false);
@@ -20,6 +32,7 @@ export default function PropertyDetail() {
   const [isWireModalOpen, setIsWireModalOpen] = useState(false);
   const [wireSubmitted, setWireSubmitted] = useState(false);
   const [transactionId, setTransactionId] = useState('');
+
 
   const handleRazorpayPayment = async () => {
     setIsPaymentLoading(true);
@@ -36,7 +49,7 @@ export default function PropertyDetail() {
       amount: 1000000,
       currency: 'INR',
       name: 'Lumina Realty',
-      description: 'Booking Deposit - The Lumina Heights',
+      description: `Booking Deposit - ${propertyTitle}`,
       theme: { color: '#1C1917' },
       handler: function (response) {
         console.log('Payment Successful. ID:', response.razorpay_payment_id);
@@ -66,7 +79,7 @@ export default function PropertyDetail() {
   const [interestRate, setInterestRate] = useState(8.5);
   const [loanTenure, setLoanTenure] = useState(20);
   
-  const basePrice = 28500000; // ₹2.85 Cr
+  const basePrice = listing?.numericPrice || 28500000;
   const downPayment = (basePrice * downPaymentPct) / 100;
   const loanPrincipal = basePrice - downPayment;
   
@@ -83,7 +96,7 @@ export default function PropertyDetail() {
       {/* 1. Hero & Overview Section */}
       <div className="max-w-screen-xl mx-auto px-6 pt-12">
         <div className="relative w-full h-[500px] md:h-[600px] mb-8 overflow-hidden rounded-xl shadow-sm border border-gray-200">
-          <img src="/brutalist_exterior.png" alt="Property Exterior" className="w-full h-full object-cover" />
+          <img src={propertyImage} alt="Property Exterior" className="w-full h-full object-cover" />
           <div className="absolute top-6 right-6">
             <span className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-xs font-bold tracking-widest uppercase flex items-center gap-2 shadow-sm border border-gray-100 text-stone-800">
               <span className="material-symbols-outlined text-emerald-600 text-base">explore</span>
@@ -92,13 +105,77 @@ export default function PropertyDetail() {
           </div>
         </div>
         
+        {listing?.status === 'Sold' && (
+          <div className="mb-8 p-5 bg-stone-900 text-white rounded-sm border border-stone-800 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-md">
+            <div className="flex items-start md:items-center gap-3.5">
+              <span className="material-symbols-outlined text-amber-400 text-2xl pt-0.5 md:pt-0">verified</span>
+              <div>
+                <p className="text-xs uppercase font-black tracking-widest text-amber-400">Sold / Archived Residence</p>
+                <p className="text-xs text-stone-300 font-sans mt-0.5 leading-relaxed">
+                  This residence has been acquired and marked as Sold in the website lifecycle. Its on-chain Ethereum title deed provenance{blockchainId ? ` (#${blockchainId})` : ''} and SHA-256 document integrity checks remain permanently recorded and verifiable.
+                </p>
+              </div>
+            </div>
+            <span className="self-start md:self-center px-3.5 py-1.5 bg-stone-800 text-amber-300 text-[10px] font-mono uppercase font-bold tracking-widest rounded-sm border border-stone-700 whitespace-nowrap">
+              Status: Sold
+            </span>
+          </div>
+        )}
+
         <div className="mb-16">
-          <h1 className="text-4xl md:text-6xl font-serif text-stone-900 mb-4 leading-tight">The Lumina Heights</h1>
+          <div className="flex flex-wrap items-center gap-3 mb-2">
+            <h1 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">{propertyTitle}</h1>
+            {listing?.status === 'Sold' && (
+              <span className="bg-stone-900 text-white border border-stone-800 font-sans text-xs font-bold px-3 py-1 rounded-sm uppercase tracking-wider shadow-sm">
+                Sold
+              </span>
+            )}
+            {listing?.registrationPending ? (
+              <span className="bg-amber-100 text-amber-900 border border-amber-300 font-sans text-xs px-3 py-1 rounded-sm uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                Registration pending
+              </span>
+            ) : blockchainId ? (
+              verificationStatus === 'unavailable' ? (
+                <span className="bg-amber-50 text-amber-900 border border-amber-300 font-sans text-xs px-3 py-1 rounded-sm uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                  Blockchain information unavailable (#{blockchainId})
+                </span>
+              ) : verificationStatus === 'loading' ? (
+                <span className="bg-stone-100 text-stone-700 border border-stone-200 font-sans text-xs px-3 py-1 rounded-sm uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-stone-400 animate-spin"></span>
+                  Querying Sepolia… (#{blockchainId})
+                </span>
+              ) : verificationStatus === 'verified' ? (
+                <span className="bg-stone-900 text-white font-mono text-xs px-3 py-1 rounded-sm uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  Blockchain registered #{blockchainId}
+                </span>
+              ) : (
+                <span className="bg-amber-50 text-amber-800 border border-amber-200 font-sans text-xs px-3 py-1 rounded-sm uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                  Blockchain record unconfirmed (#{blockchainId})
+                </span>
+              )
+            ) : (
+              <span className="bg-stone-100 text-stone-600 font-sans text-xs px-3 py-1 rounded-sm uppercase tracking-wider flex items-center gap-1.5 border border-stone-200">
+                <span className="w-2 h-2 rounded-full bg-stone-400"></span>
+                Off-chain
+              </span>
+            )}
+          </div>
           <p className="text-lg text-stone-500 font-sans tracking-wide uppercase font-medium flex items-center gap-2">
             <span className="material-symbols-outlined text-xl">location_on</span>
-            Plot 12, Financial District, Hyderabad
+            {propertyLocation}
           </p>
         </div>
+
+        {/* Dedicated On-Chain Title & Verification Section */}
+        <PropertyBlockchainVerification
+          listing={listing}
+          listingId={id}
+          onStatusChange={setVerificationStatus}
+        />
 
         {/* 2. Spatial Details & Floor Plans */}
         <section className="mb-20 pb-20 border-b border-gray-200">
@@ -212,16 +289,30 @@ export default function PropertyDetail() {
                     ₹{Math.round(estimatedEMI).toLocaleString('en-IN')}
                   </div>
                   <p className="text-stone-400 text-sm italic font-serif">Based on ₹{(loanPrincipal/10000000).toFixed(2)} Cr loan details</p>
-                  <button onClick={handleRazorpayPayment} disabled={isPaymentLoading} className="mt-8 w-full border border-stone-900 bg-stone-900 text-white font-semibold uppercase tracking-wider py-4 rounded-lg text-[11px] hover:bg-stone-800 transition-colors flex items-center justify-center gap-2">
-                    {isPaymentLoading ? (
-                      <><span className="material-symbols-outlined animate-spin text-[16px]">refresh</span> Processing...</>
-                    ) : (
-                      <><span className="material-symbols-outlined text-[16px]">lock</span> Secure with ₹10,000 Deposit</>
-                    )}
-                  </button>
-                  <button onClick={() => setIsWireModalOpen(true)} className="mt-4 w-full border border-stone-200 bg-white text-stone-800 font-semibold uppercase tracking-wider py-4 rounded-lg text-[11px] hover:bg-stone-50 transition-colors flex items-center justify-center gap-2 shadow-sm">
-                    <span className="material-symbols-outlined text-[16px]">account_balance</span> Full Payment via IMPS/NEFT
-                  </button>
+                  {listing?.status === 'Sold' ? (
+                    <div className="mt-8 w-full bg-stone-100 border border-stone-300 p-5 rounded-lg text-center">
+                      <div className="flex items-center justify-center gap-2 text-stone-900 font-bold uppercase tracking-wider text-xs mb-1">
+                        <span className="material-symbols-outlined text-sm text-stone-700">lock</span>
+                        Acquisition Closed · Sold
+                      </div>
+                      <p className="text-stone-500 text-xs font-serif italic">
+                        This architectural residence has been acquired. Booking deposit and wire transfers are disabled. On-chain deed provenance and SHA-256 document integrity checks remain available below.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <button onClick={handleRazorpayPayment} disabled={isPaymentLoading} className="mt-8 w-full border border-stone-900 bg-stone-900 text-white font-semibold uppercase tracking-wider py-4 rounded-lg text-[11px] hover:bg-stone-800 transition-colors flex items-center justify-center gap-2">
+                        {isPaymentLoading ? (
+                          <><span className="material-symbols-outlined animate-spin text-[16px]">refresh</span> Processing...</>
+                        ) : (
+                          <><span className="material-symbols-outlined text-[16px]">lock</span> Secure with ₹10,000 Deposit</>
+                        )}
+                      </button>
+                      <button onClick={() => setIsWireModalOpen(true)} className="mt-4 w-full border border-stone-200 bg-white text-stone-800 font-semibold uppercase tracking-wider py-4 rounded-lg text-[11px] hover:bg-stone-50 transition-colors flex items-center justify-center gap-2 shadow-sm">
+                        <span className="material-symbols-outlined text-[16px]">account_balance</span> Full Payment via IMPS/NEFT
+                      </button>
+                    </>
+                  )}
                   {paymentFailed && <p className="text-[#9e422c] text-[10px] uppercase tracking-widest font-bold mt-4">Payment cancelled or failed.</p>}
                 </div>
               </div>

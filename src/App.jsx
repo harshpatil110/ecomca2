@@ -27,6 +27,7 @@ import NotificationsAdmin from './pages/admin/NotificationsAdmin';
 import HelpSupportAdmin from './pages/admin/HelpSupportAdmin';
 import UserProfileAdmin from './pages/admin/UserProfileAdmin';
 import CreateListingAdmin from './pages/admin/CreateListingAdmin';
+import BlockchainManagementDashboard from './pages/admin/BlockchainManagementDashboard';
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
         <Route path="/admin/overview" element={<AdminLayout><OverviewAdmin /></AdminLayout>} />
         <Route path="/admin/listings" element={<AdminLayout><ListingsManagerAdmin /></AdminLayout>} />
         <Route path="/admin/listings/new" element={<AdminLayout><CreateListingAdmin /></AdminLayout>} />
+        <Route path="/admin/blockchain" element={<AdminLayout><BlockchainManagementDashboard /></AdminLayout>} />
         <Route path="/admin/settings" element={<AdminLayout><SettingsAdmin /></AdminLayout>} />
         <Route path="/admin/notifications" element={<AdminLayout><NotificationsAdmin /></AdminLayout>} />
         <Route path="/admin/help" element={<AdminLayout><HelpSupportAdmin /></AdminLayout>} />

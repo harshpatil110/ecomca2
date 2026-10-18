@@ -1,8 +1,23 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import heroVideo from '../assets/landing video.mp4';
+import { getListings, subscribeToListings } from '../services/listingsStore';
 
 export default function LuminaHome() {
   const navigate = useNavigate();
+  const [listings, setListings] = useState(() => getListings());
+
+  const [visibleLimit, setVisibleLimit] = useState(6);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToListings((updated) => setListings(updated));
+    return unsubscribe;
+  }, []);
+
+  // Filter out drafts and sold listings from public active homepage display
+  const displayListings = listings.filter((l) => l.status !== 'Draft' && l.status !== 'Sold');
+  const pagedListings = displayListings.slice(0, visibleLimit);
+
   return (
     <div className="font-body text-on-surface">
       {/* ── Hero Section ── */}
@@ -46,31 +61,85 @@ export default function LuminaHome() {
 
       {/* ── Featured Properties ── */}
       <section className="py-32 px-8 max-w-screen-2xl mx-auto">
-        <div className="flex flex-col mb-16">
-          <span className="text-xs uppercase tracking-[0.3em] text-stone-400 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>Volume 04</span>
-          <h2 className="text-7xl md:text-8xl font-black tracking-[-0.04em] text-[#31332c] uppercase leading-[0.9]" style={{ fontFamily: 'Inter, sans-serif' }}>
-            Lumina<br />Portfolio
-          </h2>
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div>
+            <span className="text-xs uppercase tracking-[0.3em] text-stone-400 mb-4 block" style={{ fontFamily: 'Inter, sans-serif' }}>Volume 04</span>
+            <h2 className="text-7xl md:text-8xl font-black tracking-[-0.04em] text-[#31332c] uppercase leading-[0.9]" style={{ fontFamily: 'Inter, sans-serif' }}>
+              Lumina<br />Portfolio
+            </h2>
+          </div>
+          <div className="text-right">
+            <p className="text-sm font-serif italic text-stone-500 mb-2">
+              {displayListings.length} Curated Architectural Masterpieces
+            </p>
+            <button
+              onClick={() => navigate('/explore')}
+              className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-900 border-b border-stone-900 pb-1 hover:text-stone-600 transition-colors"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            >
+              Explore Full Collection ↗
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {[
-            { price: '₹4,250,000', location: '214 Silverlake Terrace, Los Angeles CA', src: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800', offset: '', alt: 'Modern minimalist living room featuring warm beige tones and luxury furniture' },
-            { price: '₹2,890,000', location: 'The Glass Pavilion, Joshua Tree', src: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=800', offset: 'md:translate-y-12', alt: 'Exterior view of a brutalist glass pavilion surrounded by nature' },
-            { price: '₹6,100,000', location: '88 Brutalist Row, Greenwich CT', src: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&q=80&w=800', offset: '', alt: 'High-end luxury kitchen cast in concrete and dark oak' },
-          ].map(({ price, location, src, offset, alt }, i) => (
-            <div key={i} onClick={() => navigate('/property/1')} className={`group cursor-pointer ${offset}`}>
+          {pagedListings.map((item, i) => (
+            <div
+              key={item.id}
+              onClick={() => navigate(`/property/${item.id}`)}
+              className={`group cursor-pointer ${i % 3 === 1 ? 'md:translate-y-12' : ''}`}
+            >
               <div className="aspect-[4/5] overflow-hidden mb-6 relative bg-stone-100 border border-stone-200">
-                <img alt={alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src={src} />
-                {i === 0 && <div className="absolute top-4 right-4 bg-white py-1 px-3 text-[10px] font-bold uppercase tracking-widest" style={{ fontFamily: 'Inter, sans-serif' }}>Available</div>}
+                <img
+                  alt={item.name}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  src={item.src || '/brutalist_exterior.png'}
+                  loading="lazy"
+                />
+                {item.registrationPending ? (
+                  <div className="absolute top-4 left-4 bg-amber-500 text-white py-1 px-3 text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 shadow-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                    Registration pending
+                  </div>
+                ) : item.blockchainPropertyId ? (
+                  <div className="absolute top-4 left-4 bg-stone-900 text-white py-1 px-3 text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 shadow-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Blockchain registered #{item.blockchainPropertyId}
+                  </div>
+                ) : (
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-stone-600 py-1 px-3 text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 shadow-sm border border-stone-200" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400"></span>
+                    Off-chain
+                  </div>
+                )}
+                <div className="absolute top-4 right-4 bg-white py-1 px-3 text-[10px] font-bold uppercase tracking-widest shadow-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  {item.badge || item.status || 'Available'}
+                </div>
               </div>
-              <div className="space-y-3">
-                <h3 className="text-3xl font-black tracking-tight" style={{ fontFamily: 'Inter, sans-serif' }}>{price}</h3>
-                <p className="text-lg text-stone-500 italic">{location}</p>
+              <div className="space-y-2">
+                <h3 className="text-3xl font-black tracking-tight text-stone-900" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  {item.price}
+                </h3>
+                <h4 className="text-xs font-bold uppercase tracking-widest text-stone-900" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  {item.name}
+                </h4>
+                <p className="text-lg text-stone-500 italic">{item.location}</p>
               </div>
             </div>
           ))}
         </div>
+
+        {displayListings.length > visibleLimit && (
+          <div className="mt-24 text-center">
+            <button
+              onClick={() => setVisibleLimit((prev) => Math.min(prev + 6, displayListings.length))}
+              className="bg-stone-900 text-white px-10 py-5 font-bold uppercase tracking-[0.2em] text-xs hover:bg-stone-800 transition-colors shadow-sm"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            >
+              Load More Residences ({pagedListings.length} of {displayListings.length} shown)
+            </button>
+          </div>
+        )}
       </section>
 
       {/* ── Value Prop ── */}
