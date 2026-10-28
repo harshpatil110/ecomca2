@@ -20,9 +20,9 @@
     "documentHash": "0xe13c87b28dbee5397c019246099152c9b6b299c77c6f5e8206b12d3dba8c727d",
     "isDemo": true,
     "isSyntheticDocument": true,
-    "badge": "Off-chain",
-    "blockchainPropertyId": null,
-    "blockchainTxHash": null,
+    "badge": "Blockchain registered",
+    "blockchainPropertyId": "4",
+    "blockchainTxHash": "0x0b7b018e4092d661ae9f6f8bfea49113314c96a3cd396d6dc7557c5727256027",
     "publishedAt": "2026-09-07T01:09:09.865Z"
   },
   {
@@ -46,9 +46,9 @@
     "documentHash": "0xf2036e5b15841c912d95fc9137ff01e234e19be3c715c130d28614c215d16c9c",
     "isDemo": true,
     "isSyntheticDocument": true,
-    "badge": "Off-chain",
-    "blockchainPropertyId": null,
-    "blockchainTxHash": null,
+    "badge": "Blockchain registered",
+    "blockchainPropertyId": "5",
+    "blockchainTxHash": "0xdc11fe4339ff2526b865bf977058f5a127e349f9e15a8b895e436cd732dbc6f5",
     "publishedAt": "2026-09-07T02:09:09.866Z"
   },
   {
@@ -72,9 +72,9 @@
     "documentHash": "0x957a4751950d0e71b5a5565d47651c08346dba0d7e3ef07d517f610f543e8f41",
     "isDemo": true,
     "isSyntheticDocument": true,
-    "badge": "Off-chain",
-    "blockchainPropertyId": null,
-    "blockchainTxHash": null,
+    "badge": "Blockchain registered",
+    "blockchainPropertyId": "6",
+    "blockchainTxHash": "0xe7bf290bc153647e364611cd49b8fceffe8ba0864f658a48baa995da9a2030a8",
     "publishedAt": "2026-09-07T03:09:09.866Z"
   },
   {
@@ -98,9 +98,9 @@
     "documentHash": "0xa8752c65faed411d5fb1acfe0302ee04d2ba69a466c1a7351711b98ca11b6247",
     "isDemo": true,
     "isSyntheticDocument": true,
-    "badge": "Off-chain",
-    "blockchainPropertyId": null,
-    "blockchainTxHash": null,
+    "badge": "Blockchain registered",
+    "blockchainPropertyId": "7",
+    "blockchainTxHash": "0x787900efdd05c2c683b006f3f9fdc303baddfa0148aca9417fe8eb0e0bc7b0e9",
     "publishedAt": "2026-09-07T04:09:09.867Z"
   },
   {

@@ -2,7 +2,7 @@
   "contractAddress": "0x569F33bcd31Aec0eC4c5335A6393E87B3E65b7E5",
   "chainId": 11155111,
   "createdAt": "2026-10-18T17:10:20.959Z",
-  "lastUpdated": "2026-10-18T17:56:30.596Z",
+  "lastUpdated": "2026-10-18T18:00:53.486Z",
   "summary": {
     "total": 0,
     "confirmed": 0,
@@ -10,5 +10,46 @@
     "failed": 0,
     "skipped": 0
   },
-  "registrations": {}
+  "registrations": {
+    "LUM-DEMO-0001": {
+      "websiteId": "DEMO-1001",
+      "propertyRef": "LUM-DEMO-0001",
+      "status": "confirmed",
+      "blockchainPropertyId": "4",
+      "documentHash": "0xe13c87b28dbee5397c019246099152c9b6b299c77c6f5e8206b12d3dba8c727d",
+      "reconciledFromChain": true,
+      "lastUpdated": "2026-10-18T18:00:10.866Z"
+    },
+    "LUM-DEMO-0002": {
+      "websiteId": "DEMO-1002",
+      "propertyRef": "LUM-DEMO-0002",
+      "status": "confirmed",
+      "blockchainPropertyId": "5",
+      "documentHash": "0xf2036e5b15841c912d95fc9137ff01e234e19be3c715c130d28614c215d16c9c",
+      "reconciledFromChain": true,
+      "lastUpdated": "2026-10-18T18:00:10.868Z"
+    },
+    "LUM-DEMO-0003": {
+      "websiteId": "DEMO-1003",
+      "propertyRef": "LUM-DEMO-0003",
+      "status": "confirmed",
+      "blockchainPropertyId": "6",
+      "txHash": "0xe7bf290bc153647e364611cd49b8fceffe8ba0864f658a48baa995da9a2030a8",
+      "blockNumber": 11942708,
+      "confirmedAt": "2026-10-18T18:00:39.762Z",
+      "initialOwner": "0x127d6da08f6617A7fdB3EEf6b8Aaa7f172D51793",
+      "documentHash": "0x957a4751950d0e71b5a5565d47651c08346dba0d7e3ef07d517f610f543e8f41"
+    },
+    "LUM-DEMO-0004": {
+      "websiteId": "DEMO-1004",
+      "propertyRef": "LUM-DEMO-0004",
+      "status": "confirmed",
+      "blockchainPropertyId": "7",
+      "txHash": "0x787900efdd05c2c683b006f3f9fdc303baddfa0148aca9417fe8eb0e0bc7b0e9",
+      "blockNumber": 11942709,
+      "confirmedAt": "2026-10-18T18:00:53.486Z",
+      "initialOwner": "0x127d6da08f6617A7fdB3EEf6b8Aaa7f172D51793",
+      "documentHash": "0xa8752c65faed411d5fb1acfe0302ee04d2ba69a466c1a7351711b98ca11b6247"
+    }
+  }
 }

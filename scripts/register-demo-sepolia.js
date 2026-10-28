@@ -27,6 +27,31 @@ import { JsonRpcProvider, Wallet, Contract } from 'ethers';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Automatically load .env from project root if present
+const envPath = path.resolve(__dirname, '../.env');
+if (fs.existsSync(envPath)) {
+  try {
+    const envContent = fs.readFileSync(envPath, 'utf-8');
+    for (const line of envContent.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const eqIdx = trimmed.indexOf('=');
+      if (eqIdx !== -1) {
+        const key = trimmed.slice(0, eqIdx).trim();
+        let val = trimmed.slice(eqIdx + 1).trim();
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+          val = val.slice(1, -1);
+        }
+        if (!process.env[key]) {
+          process.env[key] = val;
+        }
+      }
+    }
+  } catch (err) {
+    // ignore .env read error
+  }
+}
+
 // Contract Configuration
 const CONTRACT_ADDRESS = '0x569F33bcd31Aec0eC4c5335A6393E87B3E65b7E5';
 const SEPOLIA_CHAIN_ID = 11155111n;
