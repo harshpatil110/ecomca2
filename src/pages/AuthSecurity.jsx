@@ -29,7 +29,7 @@ export default function AuthSecurity() {
               <Link to="#" className="text-[10px] font-bold tracking-widest uppercase text-[#5e6058] hover:text-[#31332c] border-b border-transparent hover:border-[#31332c] transition-all" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Forgot Password?
               </Link>
-              <Link to="/admin/revenue">
+              <Link to="/blockchain">
                 <button className="bg-[#625d5b] text-[#fef6f2] px-10 py-4 rounded-sm text-xs font-black tracking-widest uppercase hover:opacity-90 active:scale-95 transition-all" type="button" style={{ fontFamily: 'Inter, sans-serif' }}>
                   Authenticate
                 </button>

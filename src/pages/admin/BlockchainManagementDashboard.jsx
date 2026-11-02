@@ -17,7 +17,14 @@ import {
   SEPOLIA_RPC_URLS,
   isSepoliaNetwork,
 } from '../../blockchain/registryConfig';
-import { getListings, subscribeToListings, updateListing } from '../../services/listingsStore';
+import {
+  getListings,
+  subscribeToListings,
+  updateListing,
+  createTransferRequest,
+  cancelTransferRequest,
+  transferOwnership,
+} from '../../services/listingsStore';
 import DocumentIntegrityVerification from '../../blockchain/DocumentIntegrityVerification';
 
 // Enum mappings per contract specification
@@ -79,29 +86,29 @@ function formatTimestamp(ts) {
 }
 
 export default function BlockchainManagementDashboard({ embedded = false }) {
-  // ── Navigation Tab State ──
-  const [activeTab, setActiveTab] = useState('management'); // 'management' | 'register' | 'transfer' | 'lookup' | 'bulk' | 'funding'
+  // ΓöÇΓöÇ Navigation Tab State ΓöÇΓöÇ
+  const [activeTab, setActiveTab] = useState('roster'); // 'roster' | 'register' | 'transfer' | 'verification' | 'status' | 'events' | 'bulk' | 'funding'
 
-  // ── Listings from Store ──
+  // ΓöÇΓöÇ Listings from Store ΓöÇΓöÇ
   const [websiteListings, setWebsiteListings] = useState(() => getListings());
 
-  // ── On-Chain Registry Data ──
+  // ΓöÇΓöÇ On-Chain Registry Data ΓöÇΓöÇ
   const [onChainRecords, setOnChainRecords] = useState({});
   const [onChainCount, setOnChainCount] = useState(null);
   const [isLoadingOnChain, setIsLoadingOnChain] = useState(false);
   const [rpcError, setRpcError] = useState(null);
 
-  // ── Web3 & Wallet State ──
+  // ΓöÇΓöÇ Web3 & Wallet State ΓöÇΓöÇ
   const [account, setAccount] = useState('');
   const [contractAdmin, setContractAdmin] = useState('');
   const [chainId, setChainId] = useState(null);
   const [walletError, setWalletError] = useState('');
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
 
-  // ── Toast / General Notification ──
+  // ΓöÇΓöÇ Toast / General Notification ΓöÇΓöÇ
   const [toastMessage, setToastMessage] = useState(null);
 
-  // ── Status Update Modal State ──
+  // ΓöÇΓöÇ Status Update Modal State ΓöÇΓöÇ
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [selectedTarget, setSelectedTarget] = useState(null);
   const [selectedNewStatus, setSelectedNewStatus] = useState('1'); // '0' | '1' | '2'
@@ -115,22 +122,31 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     error: '',
   });
 
-  // ── Tab 2: Register Form State ──
+  // ΓöÇΓöÇ Tab 2: Register Form State ΓöÇΓöÇ
   const [registerOwner, setRegisterOwner] = useState('');
   const [registerRef, setRegisterRef] = useState('');
-  const [registerDocHash, setRegisterDocHash] = useState(ZeroHash);
+  const [registerDocHash, setRegisterDocHash] = useState('');
+  // ── On-Chain Contract Events State ──
+  const [contractEvents, setContractEvents] = useState([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
+  const [eventsError, setEventsError] = useState('');
+  const [selectedEventType, setSelectedEventType] = useState('ALL');
   const [registerBusy, setRegisterBusy] = useState(false);
   const [registerMsg, setRegisterMsg] = useState('');
   const [registerErr, setRegisterErr] = useState('');
 
-  // ── Tab 3: Transfer Form State ──
+  // ΓöÇΓöÇ Tab 3: Transfer Form State ΓöÇΓöÇ
   const [transferPropId, setTransferPropId] = useState('');
   const [transferNewOwner, setTransferNewOwner] = useState('');
+  const [transferNewOwnerName, setTransferNewOwnerName] = useState('');
+  const [transferNotes, setTransferNotes] = useState('');
+  const [transferShareableLink, setTransferShareableLink] = useState('');
+  const [transferCopied, setTransferCopied] = useState(false);
   const [transferBusy, setTransferBusy] = useState(false);
   const [transferMsg, setTransferMsg] = useState('');
   const [transferErr, setTransferErr] = useState('');
 
-  // ── Tab 4: Lookup State ──
+  // ΓöÇΓöÇ Tab 4: Lookup State ΓöÇΓöÇ
   const [lookupId, setLookupId] = useState('');
   const [lookupRecord, setLookupRecord] = useState(null);
   const [lookupVerified, setLookupVerified] = useState(null);
@@ -138,7 +154,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
   const [lookupBusy, setLookupBusy] = useState(false);
   const [lookupErr, setLookupErr] = useState('');
 
-  // ── Copy Helper ──
+  // ΓöÇΓöÇ Copy Helper ΓöÇΓöÇ
   const [copiedKey, setCopiedKey] = useState('');
   const handleCopy = (text, key) => {
     navigator.clipboard.writeText(text);
@@ -146,12 +162,12 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     setTimeout(() => setCopiedKey(''), 2000);
   };
 
-  // ── Sepolia Test ETH Funding State ──
+  // ΓöÇΓöÇ Sepolia Test ETH Funding State ΓöÇΓöÇ
   const [sepoliaBalance, setSepoliaBalance] = useState(null);
   const [isFetchingBalance, setIsFetchingBalance] = useState(false);
   const [balanceError, setBalanceError] = useState('');
 
-  // ── Bulk Registration State ──
+  // ΓöÇΓöÇ Bulk Registration State ΓöÇΓöÇ
   const [bulkCount, setBulkCount] = useState(10);
   const [bulkGasPerTx, setBulkGasPerTx] = useState(125000);
   const [bulkPhase, setBulkPhase] = useState('idle'); // 'idle' | 'previewing' | 'running' | 'paused' | 'done'
@@ -162,19 +178,19 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
   const [bulkConfirmed, setBulkConfirmed] = useState(false); // explicit operator confirmation
   const bulkAbortRef = useRef(false); // set to true to stop the loop
 
-  // ── Derived Web3 Status ──
+  // ΓöÇΓöÇ Derived Web3 Status ΓöÇΓöÇ
   const isSepolia = Boolean(chainId && isSepoliaNetwork(chainId));
   const isAdminMatch = Boolean(
     account && contractAdmin && normalizeAddress(account) === normalizeAddress(contractAdmin)
   );
   const canAdminTransact = Boolean(account && isSepolia && isAdminMatch);
 
-  // ── Subscribe to Local Listings Store ──
+  // ΓöÇΓöÇ Subscribe to Local Listings Store ΓöÇΓöÇ
   useEffect(() => {
     return subscribeToListings((updated) => setWebsiteListings(updated));
   }, []);
 
-  // ── Sync Wallet State ──
+  // ΓöÇΓöÇ Sync Wallet State ΓöÇΓöÇ
   const syncWallet = useCallback(async (requestAccounts = false) => {
     if (!window.ethereum) {
       if (requestAccounts) {
@@ -213,7 +229,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     }
   }, []);
 
-  // ── Fetch On-Chain Data from Contract via Public RPC or Browser Provider ──
+  // ΓöÇΓöÇ Fetch On-Chain Data from Contract via Public RPC or Browser Provider ΓöÇΓöÇ
   const fetchOnChainData = useCallback(async () => {
     setIsLoadingOnChain(true);
     setRpcError(null);
@@ -315,7 +331,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     }
   }, []);
 
-  // ── Switch to Sepolia Network ──
+  // ΓöÇΓöÇ Switch to Sepolia Network ΓöÇΓöÇ
   const switchToSepolia = useCallback(async () => {
     if (!window.ethereum) {
       setWalletError('MetaMask is not detected. Please install or enable MetaMask.');
@@ -327,7 +343,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
         params: [{ chainId: '0xaa36a7' }], // Sepolia chain ID 11155111 in hex
       });
     } catch (switchErr) {
-      // Chain not added to MetaMask — add it
+      // Chain not added to MetaMask ΓÇö add it
       if (switchErr?.code === 4902) {
         try {
           await window.ethereum.request({
@@ -349,7 +365,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     }
   }, []);
 
-  // ── Fetch Live Sepolia ETH Balance ──
+  // ΓöÇΓöÇ Fetch Live Sepolia ETH Balance ΓöÇΓöÇ
   const fetchSepoliaBalance = useCallback(async (addr) => {
     const targetAddr = addr || account;
     if (!targetAddr) {
@@ -416,7 +432,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     };
   }, [syncWallet, fetchOnChainData]);
 
-  // ── Compute Dashboard Statistics ──
+  // ΓöÇΓöÇ Compute Dashboard Statistics ΓöÇΓöÇ
   const stats = useMemo(() => {
     const totalWebsite = websiteListings.length;
     const blockchainRegistered = websiteListings.filter((l) => Boolean(l.blockchainPropertyId)).length;
@@ -458,7 +474,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     );
   }, [onChainRecords, rpcError]);
 
-  // ── Combined Roster for Management Table ──
+  // ΓöÇΓöÇ Combined Roster for Management Table ΓöÇΓöÇ
   const propertyRoster = useMemo(() => {
     // 1. Start with all website listings
     const mapped = websiteListings.map((item) => {
@@ -509,10 +525,10 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
       if (!linkedBIds.has(rec.propertyId)) {
         mapped.push({
           key: `onchain-${rec.propertyId}`,
-          websiteId: '—',
+          websiteId: 'ΓÇö',
           name: rec.locationReference ? `Registry Item (${rec.locationReference})` : `On-Chain Property #${rec.propertyId}`,
           city: 'Sepolia Registry',
-          price: '—',
+          price: 'ΓÇö',
           blockchainPropertyId: rec.propertyId,
           isOffChain: false,
           currentOwner: rec.currentOwner || 'N/A',
@@ -526,7 +542,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     return mapped;
   }, [websiteListings, onChainRecords, rpcError, isLoadingOnChain]);
 
-  // ── Open Status Update Modal ──
+  // ΓöÇΓöÇ Open Status Update Modal ΓöÇΓöÇ
   const openStatusUpdateModal = (prop) => {
     if (prop.isOffChain) return; // Requirement 14: Off-chain properties do not expose status management
     setSelectedTarget(prop);
@@ -540,7 +556,19 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     setIsStatusModalOpen(true);
   };
 
-  // ── Handle Modal Proceed to Confirmation Step (Requirement 9) ──
+  // ── Open Status Management Tab with selected property ──
+  const openStatusTabForProperty = (prop) => {
+    if (prop.isOffChain) return;
+    setSelectedTarget(prop);
+    const curStatus = typeof prop.onChainStatus === 'number' ? prop.onChainStatus : 0;
+    setSelectedNewStatus(curStatus === 1 ? '0' : '1');
+    setStatusReason('');
+    setIsConfirmationStep(false);
+    setModalError('');
+    setActiveTab('status');
+  };
+
+  // ΓöÇΓöÇ Handle Modal Proceed to Confirmation Step (Requirement 9) ΓöÇΓöÇ
   const handleProceedToConfirmation = (e) => {
     e.preventDefault();
     if (!statusReason.trim()) {
@@ -551,7 +579,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     setIsConfirmationStep(true);
   };
 
-  // ── Execute Status Change Transaction (Requirements 6, 7, 8, 10, 11, 12) ──
+  // ΓöÇΓöÇ Execute Status Change Transaction (Requirements 6, 7, 8, 10, 11, 12) ΓöÇΓöÇ
   const handleConfirmAndSendTx = async () => {
     if (!selectedTarget || !selectedTarget.blockchainPropertyId) return;
     if (!statusReason.trim()) {
@@ -615,9 +643,20 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
         // Trigger on-chain data refresh
         await fetchOnChainData();
 
+        let eventNotice = '';
+        for (const log of receipt.logs) {
+          try {
+            const parsed = writeContract.interface.parseLog(log);
+            if (parsed?.name === 'PropertyStatusUpdated') {
+              eventNotice = ` (Emitted on-chain event PropertyStatusUpdated: Property #${parsed.args.propertyId}, Status: ${STATUS_ENUM[parsed.args.newStatus]}, Reason: "${parsed.args.reason}")`;
+              break;
+            }
+          } catch { /* skip */ }
+        }
+
         setToastMessage({
           type: 'success',
-          text: `Status for Property #${propId} successfully updated to ${STATUS_ENUM[newStatusNum]} on-chain.`,
+          text: `Status for Property #${propId} successfully updated to ${STATUS_ENUM[newStatusNum]} on-chain.${eventNotice}`,
         });
       } else {
         setTxState({
@@ -654,7 +693,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     }
   };
 
-  // ── Tab 2: Register Property Function ──
+  // ΓöÇΓöÇ Tab 2: Register Property Function ΓöÇΓöÇ
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     setRegisterErr('');
@@ -668,8 +707,8 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
       setRegisterErr('Enter a location reference (e.g. MUM-001 or LUM-742).');
       return;
     }
-    if (!isHexString(registerDocHash, 32)) {
-      setRegisterErr('Document hash must be a valid 32-byte hex string (0x followed by 64 hex characters).');
+    if (!isHexString(registerDocHash, 32) || registerDocHash === ZeroHash) {
+      setRegisterErr('A valid non-zero 32-byte SHA-256 document hash is strictly required. ZeroHash (0x00...00) is rejected.');
       return;
     }
 
@@ -707,7 +746,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
       );
       setRegisterOwner('');
       setRegisterRef('');
-      setRegisterDocHash(ZeroHash);
+      setRegisterDocHash('');
       await fetchOnChainData();
     } catch (err) {
       setRegisterErr(readableError(err));
@@ -716,7 +755,69 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     }
   };
 
-  // ── Tab 3: Transfer Property Function ──
+  // ── Tab 3: Transfer Request Preparation & Execution ──
+  const handlePrepareTransferRequest = (e) => {
+    e.preventDefault();
+    setTransferErr('');
+    setTransferMsg('');
+    setTransferShareableLink('');
+
+    const pId = String(transferPropId).trim();
+    if (!/^[1-9]\d*$/.test(pId)) {
+      setTransferErr('Enter a valid on-chain property ID.');
+      return;
+    }
+
+    const rec = onChainRecords[pId];
+    if (rec && !rec.isUnavailable && rec.status !== 0) {
+      setTransferErr(
+        `Ownership transfer blocked: Property #${pId} is currently ${STATUS_ENUM[rec.status]}. The smart contract strictly blocks transfers for disputed or suspended properties.`
+      );
+      return;
+    }
+
+    if (!transferNewOwnerName.trim()) {
+      setTransferErr('Proposed new owner full name is required.');
+      return;
+    }
+
+    if (!isAddress(transferNewOwner.trim()) || transferNewOwner.trim().toLowerCase() === ZeroHash.slice(0, 42).toLowerCase()) {
+      setTransferErr('Enter a valid non-zero recipient Ethereum address.');
+      return;
+    }
+
+    if (rec?.currentOwner && normalizeAddress(transferNewOwner) === normalizeAddress(rec.currentOwner)) {
+      setTransferErr('Proposed recipient address is already the current registered owner.');
+      return;
+    }
+
+    const match = websiteListings.find(
+      (l) => String(l.blockchainPropertyId) === pId || String(l.id) === pId
+    );
+
+    if (!match) {
+      setTransferErr(`Website record for on-chain Property #${pId} was not found in local storage.`);
+      return;
+    }
+
+    try {
+      createTransferRequest(match.id, {
+        proposedOwnerName: transferNewOwnerName.trim(),
+        proposedOwnerWallet: transferNewOwner.trim(),
+        notes: transferNotes.trim(),
+        initiatedBy: `Administrator (${formatAddress(contractAdmin || account)})`,
+      });
+
+      const link = `${window.location.origin}/transfers?property=${encodeURIComponent(match.id)}`;
+      setTransferShareableLink(link);
+      setTransferMsg(
+        `Transfer request for Property #${pId} successfully prepared! Notice: Creating this request does NOT transfer ownership on the blockchain. The current owner must connect their wallet and sign transferProperty().`
+      );
+    } catch (err) {
+      setTransferErr(readableError(err));
+    }
+  };
+
   const handleTransferSubmit = async (e) => {
     e.preventDefault();
     setTransferErr('');
@@ -754,7 +855,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
 
       if (rec && rec.currentOwner && normalizeAddress(signerAddr) !== normalizeAddress(rec.currentOwner)) {
         throw new Error(
-          `Connected wallet (${formatAddress(signerAddr)}) does not match property owner (${formatAddress(rec.currentOwner)}).`
+          `Unauthorized: Connected wallet (${formatAddress(signerAddr)}) does not match property owner (${formatAddress(rec.currentOwner)}). Smart contract rules require the current owner to sign transferProperty().`
         );
       }
 
@@ -763,9 +864,37 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
       setTransferMsg(`Transfer transaction submitted (${tx.hash.slice(0, 10)}...). Waiting for confirmation...`);
 
       const receipt = await tx.wait();
-      setTransferMsg(`Ownership transfer confirmed in block ${receipt.blockNumber}! Property #${transferPropId} successfully transferred.`);
+
+      let eventNotice = '';
+      for (const log of receipt.logs) {
+        try {
+          const parsed = contract.interface.parseLog(log);
+          if (parsed?.name === 'PropertyTransferred') {
+            eventNotice = ` (Emitted on-chain event PropertyTransferred: Property #${parsed.args.propertyId}, New Owner: ${parsed.args.newOwner})`;
+            break;
+          }
+        } catch { /* skip */ }
+      }
+
+      // Also update local store with the new owner
+      const match = websiteListings.find(
+        (l) => String(l.blockchainPropertyId) === transferPropId.trim() || String(l.id) === transferPropId.trim()
+      );
+      if (match) {
+        transferOwnership(
+          match.id,
+          transferNewOwnerName.trim() || `Owner (${formatAddress(transferNewOwner)})`,
+          transferNewOwner.trim(),
+          receipt.hash
+        );
+      }
+
+      setTransferMsg(`Ownership transfer confirmed in block ${receipt.blockNumber}! Property #${transferPropId} successfully transferred.${eventNotice}`);
       setTransferPropId('');
       setTransferNewOwner('');
+      setTransferNewOwnerName('');
+      setTransferNotes('');
+      setTransferShareableLink('');
       await fetchOnChainData();
     } catch (err) {
       setTransferErr(readableError(err));
@@ -774,7 +903,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     }
   };
 
-  // ── Tab 4: Lookup & Integrity Function ──
+  // ΓöÇΓöÇ Tab 4: Lookup & Integrity Function ΓöÇΓöÇ
   const handleLookupSubmit = async (e) => {
     e.preventDefault();
     setLookupErr('');
@@ -836,7 +965,87 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
     }
   };
 
-  // ── Bulk Registration Engine ──
+  // ── On-Chain Contract Event Indexer & Feed ──
+  const fetchContractEvents = useCallback(async () => {
+    setIsLoadingEvents(true);
+    setEventsError('');
+    try {
+      let provider = null;
+      if (window.ethereum) {
+        try {
+          const bp = new BrowserProvider(window.ethereum);
+          const net = await bp.getNetwork();
+          if (isSepoliaNetwork(net.chainId)) provider = bp;
+        } catch { /* fallback */ }
+      }
+      if (!provider) {
+        for (const url of SEPOLIA_RPC_URLS) {
+          try {
+            const rp = new JsonRpcProvider(url, { chainId: 11155111, name: 'sepolia' }, { staticNetwork: true });
+            await rp.getBlockNumber();
+            provider = rp;
+            break;
+          } catch { continue; }
+        }
+      }
+      if (!provider) throw new Error('Cannot reach any Sepolia RPC endpoint.');
+
+      const contract = new Contract(REGISTRY_ADDRESS, registryAbi, provider);
+      const currentBlock = await provider.getBlockNumber();
+      const fromBlock = Math.max(0, currentBlock - 50000);
+
+      const [regLogs, statusLogs, transferLogs] = await Promise.all([
+        contract.queryFilter('PropertyRegistered', fromBlock).catch(() => []),
+        contract.queryFilter('PropertyStatusUpdated', fromBlock).catch(() => []),
+        contract.queryFilter('PropertyTransferred', fromBlock).catch(() => []),
+      ]);
+
+      const formatted = [
+        ...regLogs.map((log) => ({
+          id: `${log.transactionHash}-${log.index}`,
+          type: 'PropertyRegistered',
+          propertyId: log.args?.[0]?.toString() || log.args?.propertyId?.toString() || '—',
+          initialOwner: log.args?.[1] || log.args?.initialOwner || '—',
+          locationReference: log.args?.[2] || log.args?.locationReference || '—',
+          documentHash: log.args?.[3] || log.args?.documentHash || '—',
+          txHash: log.transactionHash,
+          blockNumber: log.blockNumber,
+        })),
+        ...statusLogs.map((log) => ({
+          id: `${log.transactionHash}-${log.index}`,
+          type: 'PropertyStatusUpdated',
+          propertyId: log.args?.[0]?.toString() || log.args?.propertyId?.toString() || '—',
+          newStatus: Number(log.args?.[1] ?? log.args?.newStatus),
+          reason: log.args?.[2] || log.args?.reason || '—',
+          txHash: log.transactionHash,
+          blockNumber: log.blockNumber,
+        })),
+        ...transferLogs.map((log) => ({
+          id: `${log.transactionHash}-${log.index}`,
+          type: 'PropertyTransferred',
+          propertyId: log.args?.[0]?.toString() || log.args?.propertyId?.toString() || '—',
+          newOwner: log.args?.[1] || log.args?.newOwner || '—',
+          txHash: log.transactionHash,
+          blockNumber: log.blockNumber,
+        })),
+      ].sort((a, b) => b.blockNumber - a.blockNumber);
+
+      setContractEvents(formatted);
+    } catch (err) {
+      console.warn('[fetchContractEvents] Event query notice:', err);
+      setEventsError(readableError(err));
+    } finally {
+      setIsLoadingEvents(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'events') {
+      fetchContractEvents();
+    }
+  }, [activeTab, fetchContractEvents]);
+
+  // ΓöÇΓöÇ Bulk Registration Engine ΓöÇΓöÇ
   // Derives candidates: website listings that have no blockchainPropertyId yet
   const bulkCandidates = useMemo(() => {
     return websiteListings
@@ -887,7 +1096,6 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
         }
 
         const item = bulkCandidates[i];
-        const logKey = item.id || item.propertyRef;
 
         // Skip if already registered (check live onChainRecords too)
         if (item.blockchainPropertyId) {
@@ -961,7 +1169,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
           setBulkFailed(failCount);
 
           if (isRejection) {
-            // Stop the loop if user rejected — they may not want to keep approving
+            // Stop the loop if user rejected ΓÇö they may not want to keep approving
             appendBulkLog({ status: 'stopped', error: 'Loop stopped: transaction was rejected in MetaMask. Resume or stop manually.' });
             setBulkPhase('paused');
             return;
@@ -1003,7 +1211,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
 
   return (
     <div className={embedded ? 'mt-8' : 'pt-8 pb-20 px-12 max-w-7xl mx-auto'}>
-      {/* ── Page Header (When Standalone) ── */}
+      {/* ΓöÇΓöÇ Page Header (When Standalone) ΓöÇΓöÇ */}
       {!embedded && (
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
           <div>
@@ -1047,7 +1255,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
         </div>
       )}
 
-      {/* ── Dashboard Title in Embedded Mode ── */}
+      {/* ΓöÇΓöÇ Dashboard Title in Embedded Mode ΓöÇΓöÇ */}
       {embedded && (
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-t border-stone-200/80 pt-10">
           <div>
@@ -1082,7 +1290,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
         </div>
       )}
 
-      {/* ── Dashboard Statistics Cards (Requirement 2 & 3) ── */}
+      {/* ΓöÇΓöÇ Dashboard Statistics Cards (Requirement 2 & 3) ΓöÇΓöÇ */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         {/* Total Website Listings */}
         <div className="bg-white p-5 border border-stone-200 rounded-sm shadow-sm flex flex-col justify-between">
@@ -1172,7 +1380,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
         </div>
       </div>
 
-      {/* ── RPC Failure Alert (Requirement 15) ── */}
+      {/* ΓöÇΓöÇ RPC Failure Alert (Requirement 15) ΓöÇΓöÇ */}
       {rpcError && (
         <div className="mb-8 bg-red-50 border border-red-200 rounded-sm p-4 flex items-start gap-3 text-red-800 text-sm">
           <span className="material-symbols-outlined text-red-600 text-xl shrink-0 mt-0.5">error</span>
@@ -1192,7 +1400,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
         </div>
       )}
 
-      {/* ── Global Restriction Notice Banner for Disputed & Suspended (Requirement 13) ── */}
+      {/* ΓöÇΓöÇ Global Restriction Notice Banner for Disputed & Suspended (Requirement 13) ΓöÇΓöÇ */}
       {hasRestrictedProperties && (
         <div className="mb-8 bg-[#fef7ee] border-l-4 border-amber-500 border-stone-200 border p-4 rounded-sm flex items-start gap-4">
           <span className="material-symbols-outlined text-amber-600 text-2xl shrink-0">gavel</span>
@@ -1208,7 +1416,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
         </div>
       )}
 
-      {/* ── Smart Contract Admin & Wallet Authorization Bar (Requirement 10) ── */}
+      {/* ΓöÇΓöÇ Smart Contract Admin & Wallet Authorization Bar (Requirement 10) ΓöÇΓöÇ */}
       <div className="bg-white border border-stone-200 rounded-sm p-5 mb-8 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs flex-1">
@@ -1345,12 +1553,14 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
       </div>
 
       {/* ── Sub-Navigation Tabs (Consolidated Tools, Zero Duplication) ── */}
-      <div className="flex border-b border-stone-200 mb-8 overflow-x-auto gap-1">
+      <div className="flex flex-wrap border-b border-stone-200 mb-8 gap-2">
         {[
-          { id: 'management', label: 'Status Moderation & Roster', icon: 'tune' },
-          { id: 'register', label: 'Register Property On-Chain', icon: 'add_circle' },
-          { id: 'transfer', label: 'Ownership Transfer', icon: 'swap_horiz' },
-          { id: 'lookup', label: 'Lookup & Hash Verification', icon: 'verified' },
+          { id: 'roster', label: 'Overview & Property Roster', icon: 'table_chart' },
+          { id: 'register', label: 'Register Property', icon: 'add_circle' },
+          { id: 'transfer', label: 'Ownership Transfers', icon: 'swap_horiz' },
+          { id: 'verification', label: 'Document Verification', icon: 'verified' },
+          { id: 'status', label: 'Status Management', icon: 'gavel' },
+          { id: 'events', label: 'Contract Events Feed', icon: 'history_edu' },
           { id: 'bulk', label: 'Bulk Registration', icon: 'deployed_code_update' },
           { id: 'funding', label: 'Sepolia Test ETH', icon: 'water_drop' },
         ].map((tab) => {
@@ -1361,8 +1571,8 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 py-3 px-5 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 whitespace-nowrap ${
                 active
-                  ? 'border-stone-900 text-stone-900 bg-white'
-                  : 'border-transparent text-stone-400 hover:text-stone-800'
+                  ? 'border-stone-900 text-stone-900 bg-white shadow-sm'
+                  : 'border-transparent text-stone-500 hover:text-stone-900 hover:bg-stone-50'
               }`}
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
@@ -1374,9 +1584,9 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* TAB 1: STATUS MANAGEMENT & LISTING ROSTER (Core Req 4, 5, 6, 7, 8, 14) */}
+      {/* TAB 1: OVERVIEW & PROPERTY ROSTER                                  */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {activeTab === 'management' && (
+      {activeTab === 'roster' && (
         <div className="space-y-6">
           <div className="bg-white border border-stone-200 rounded-sm shadow-sm overflow-hidden">
             <div className="p-6 border-b border-stone-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#fbf9f4]">
@@ -1439,7 +1649,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                             <div>
                               <p className="font-bold text-stone-900">{prop.name}</p>
                               <p className="text-[11px] text-stone-400 font-mono">
-                                Website ID: {prop.websiteId} · {prop.city}
+                                Website ID: {prop.websiteId} ┬╖ {prop.city}
                               </p>
                             </div>
                           </div>
@@ -1458,23 +1668,30 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                           )}
                         </td>
 
-                        {/* Current Owner */}
+                        {/* Current Owner & Registered By */}
                         <td className="py-4 px-6">
                           {prop.currentOwner !== 'N/A' ? (
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-mono font-medium text-stone-800" title={prop.currentOwner}>
-                                {formatAddress(prop.currentOwner)}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => handleCopy(prop.currentOwner, prop.key)}
-                                className="text-stone-400 hover:text-stone-900"
-                                title="Copy address"
-                              >
-                                <span className="material-symbols-outlined text-[12px]">
-                                  {copiedKey === prop.key ? 'check' : 'content_copy'}
+                            <div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-mono font-medium text-stone-800" title={prop.currentOwner}>
+                                  {formatAddress(prop.currentOwner)}
                                 </span>
-                              </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopy(prop.currentOwner, prop.key)}
+                                  className="text-stone-400 hover:text-stone-900"
+                                  title="Copy address"
+                                >
+                                  <span className="material-symbols-outlined text-[12px]">
+                                    {copiedKey === prop.key ? 'check' : 'content_copy'}
+                                  </span>
+                                </button>
+                              </div>
+                              {prop.registeredBy && prop.registeredBy !== 'N/A' && (
+                                <p className="text-[10px] text-stone-400 font-mono mt-0.5" title={`Admin Signer: ${prop.registeredBy}`}>
+                                  By: {formatAddress(prop.registeredBy)}
+                                </p>
+                              )}
                             </div>
                           ) : (
                             <span className="text-stone-400 italic">N/A (Off-chain)</span>
@@ -1536,10 +1753,18 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                         <td className="py-4 px-6 text-right">
                           {prop.isOffChain ? (
                             <span className="text-[10px] font-medium text-stone-400 italic">
-                              Off-chain listing
+                              Unregistered Record
                             </span>
                           ) : (
-                            <div className="flex items-center justify-end gap-3">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                type="button"
+                                onClick={() => openStatusTabForProperty(prop)}
+                                className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1.5 rounded-sm border border-stone-300 text-stone-700 hover:bg-stone-50 transition-all shadow-sm"
+                                title="Open Status Management for this property"
+                              >
+                                Governance
+                              </button>
                               <button
                                 type="button"
                                 onClick={() => openStatusUpdateModal(prop)}
@@ -1557,10 +1782,10 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                                     ? 'Switch to Sepolia to update status'
                                     : !isAdminMatch
                                     ? 'Only contract admin wallet can change status'
-                                    : 'Change on-chain property status'
+                                    : 'Quick update on-chain property status'
                                 }
                               >
-                                Update Status
+                                Quick Update
                               </button>
                             </div>
                           )}
@@ -1575,9 +1800,9 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
         </div>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
       {/* TAB 2: REGISTER PROPERTY (Preserving Core Registry Functionality)  */}
-      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
       {activeTab === 'register' && (
         <div className="bg-white border border-stone-200 rounded-sm p-8 max-w-3xl shadow-sm">
           <div className="mb-6 border-b border-stone-200 pb-4">
@@ -1676,89 +1901,366 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
         </div>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
       {/* TAB 3: OWNERSHIP TRANSFER (Preserving Core Registry Functionality) */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* TAB 3: OWNERSHIP TRANSFER & OWNER AUTHORIZATION                    */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeTab === 'transfer' && (
-        <div className="bg-white border border-stone-200 rounded-sm p-8 max-w-3xl shadow-sm">
-          <div className="mb-6 border-b border-stone-200 pb-4">
-            <h3 className="text-2xl font-serif italic text-stone-900">Transfer On-Chain Property Ownership</h3>
-            <p className="text-xs font-serif text-stone-500 mt-1">
-              Must be called by the current on-chain owner's wallet. Blocked automatically for disputed or suspended properties.
-            </p>
-          </div>
-
-          {transferMsg && (
-            <div className="mb-6 p-4 rounded-sm bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">check_circle</span>
-              <span>{transferMsg}</span>
+        <div className="space-y-8 max-w-5xl">
+          <div className="bg-white border border-stone-200 rounded-sm p-8 shadow-sm">
+            <div className="mb-6 border-b border-stone-200 pb-4">
+              <h3 className="text-2xl font-serif italic text-stone-900">Administrator-Assisted Transfer Management & Owner Authorization</h3>
+              <p className="text-xs font-serif text-stone-500 mt-1">
+                Prepare transfer requests, generate shareable authorization links, and audit pending owner approvals. In compliance with Solidity smart contract rules, every <code className="font-mono">transferProperty()</code> transaction requires mandatory authorization and personal cryptographic signature from the current registered owner's wallet.
+              </p>
             </div>
-          )}
-          {transferErr && (
-            <div className="mb-6 p-4 rounded-sm bg-red-50 border border-red-200 text-red-900 text-xs flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">error</span>
-              <span>{transferErr}</span>
-            </div>
-          )}
 
-          <form onSubmit={handleTransferSubmit} className="space-y-5">
-            <div>
+            {transferMsg && (
+              <div className="mb-6 p-4 rounded-sm bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm">check_circle</span>
+                <span>{transferMsg}</span>
+              </div>
+            )}
+            {transferErr && (
+              <div className="mb-6 p-4 rounded-sm bg-red-50 border border-red-200 text-red-900 text-xs flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm">error</span>
+                <span>{transferErr}</span>
+              </div>
+            )}
+
+            {/* Shareable Link Banner (if generated) */}
+            {transferShareableLink && (
+              <div className="mb-6 p-4 rounded-sm bg-purple-50 border border-purple-200 text-purple-950 text-xs space-y-2">
+                <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-[11px] text-purple-900">
+                  <span className="material-symbols-outlined text-sm text-purple-700">link</span>
+                  Shareable Owner Authorization Link Generated
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    readOnly
+                    value={transferShareableLink}
+                    className="flex-1 bg-white border border-purple-200 rounded-sm px-3 py-2 text-xs font-mono text-stone-700 select-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard?.writeText(transferShareableLink);
+                      setTransferCopied(true);
+                      setTimeout(() => setTransferCopied(false), 3000);
+                    }}
+                    className="px-4 py-2 bg-purple-900 text-white text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-purple-950 transition-colors flex items-center gap-1.5 shrink-0"
+                  >
+                    <span className="material-symbols-outlined text-sm">{transferCopied ? 'check' : 'content_copy'}</span>
+                    {transferCopied ? 'Copied!' : 'Copy Link'}
+                  </button>
+                </div>
+                <p className="text-[11px] text-purple-800 font-serif italic">
+                  Provide this URL to the property owner to connect MetaMask and sign the deed conveyance transaction on Sepolia.
+                </p>
+              </div>
+            )}
+
+            {/* Target Property Selector */}
+            <div className="mb-6">
               <label className="block text-[10px] font-bold tracking-widest uppercase text-stone-400 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                On-Chain Property ID
+                Select On-Chain Registered Property
               </label>
-              <input
+              <select
                 className={inputClass}
                 value={transferPropId}
-                onChange={(e) => setTransferPropId(e.target.value)}
-                placeholder="e.g. 1"
-                disabled={transferBusy}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] font-bold tracking-widest uppercase text-stone-400 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                New Owner Address (0x...)
-              </label>
-              <input
-                className={inputClass}
-                value={transferNewOwner}
-                onChange={(e) => setTransferNewOwner(e.target.value)}
-                placeholder="0x..."
-                disabled={transferBusy}
-                required
-              />
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setTransferPropId(val);
+                  setTransferErr('');
+                  setTransferMsg('');
+                  setTransferShareableLink('');
+
+                  const match = websiteListings.find(
+                    (l) => String(l.blockchainPropertyId) === val || String(l.id) === val
+                  );
+                  if (match?.pendingTransferRequest) {
+                    setTransferNewOwnerName(match.pendingTransferRequest.proposedOwnerName || '');
+                    setTransferNewOwner(match.pendingTransferRequest.proposedOwnerWallet || '');
+                    setTransferNotes(match.pendingTransferRequest.notes || '');
+                  } else {
+                    setTransferNewOwnerName('');
+                    setTransferNewOwner('');
+                    setTransferNotes('');
+                  }
+                }}
+              >
+                <option value="">-- Choose on-chain property --</option>
+                {propertyRoster
+                  .filter((p) => !p.isOffChain && p.blockchainPropertyId)
+                  .map((p) => (
+                    <option key={p.blockchainPropertyId} value={p.blockchainPropertyId}>
+                      Property #{p.blockchainPropertyId} — {p.name} [{p.city}] (Owner: {formatAddress(p.currentOwner)})
+                    </option>
+                  ))}
+              </select>
             </div>
 
-            <div className="pt-4 border-t border-stone-200 flex justify-end gap-4 items-center">
-              <button
-                type="submit"
-                disabled={transferBusy || !account || !isSepolia}
-                className={buttonPrimaryClass}
-              >
-                {transferBusy ? (
-                  <>
-                    <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span>
-                    Executing Transfer...
-                  </>
-                ) : (
-                  <>
-                    <span className="material-symbols-outlined text-sm">swap_horiz</span>
-                    Execute Transfer
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+            {transferPropId && (
+              <div className="space-y-6">
+                {/* Snapshot Card */}
+                {(() => {
+                  const rec = onChainRecords[transferPropId];
+                  const match = websiteListings.find(
+                    (l) => String(l.blockchainPropertyId) === transferPropId || String(l.id) === transferPropId
+                  );
+                  const isPending = match?.pendingTransferRequest?.status === 'PENDING_OWNER_AUTHORIZATION';
+
+                  return (
+                    <div className="bg-[#fbf9f4] border border-stone-200 p-5 rounded-sm space-y-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-sans">
+                        <div>
+                          <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">On-Chain ID</span>
+                          <span className="font-mono font-bold text-stone-900">#{transferPropId}</span>
+                        </div>
+                        <div>
+                          <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Current On-Chain Owner</span>
+                          <span className="font-mono text-stone-700 truncate block" title={rec?.currentOwner}>
+                            {formatAddress(rec?.currentOwner || '—')}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Deed Status</span>
+                          <span className={`font-mono font-bold px-2 py-0.5 rounded-sm inline-block ${
+                            rec?.status === 0
+                              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                              : 'bg-rose-50 text-rose-800 border border-rose-300'
+                          }`}>
+                            {typeof rec?.status === 'number' ? STATUS_ENUM[rec.status] : 'Unknown'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Authorization State</span>
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm inline-block ${
+                            isPending ? 'bg-purple-100 text-purple-900 border border-purple-300' : 'bg-stone-100 text-stone-600'
+                          }`}>
+                            {isPending ? 'Pending Authorization' : 'Standard'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {isPending && match?.pendingTransferRequest && (
+                        <div className="p-3 bg-purple-50/80 border border-purple-200 rounded-sm text-xs text-purple-950 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                          <div>
+                            <span className="font-bold">Pending Request:</span> Proposed Transferee{' '}
+                            <strong>{match.pendingTransferRequest.proposedOwnerName}</strong> ({match.pendingTransferRequest.proposedOwnerWallet})
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              cancelTransferRequest(match.id);
+                              setTransferMsg('Transfer request was cancelled.');
+                            }}
+                            className="text-[10px] font-bold uppercase tracking-wider text-rose-700 hover:underline shrink-0"
+                          >
+                            Cancel Request
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* Preparation Form */}
+                <form onSubmit={handlePrepareTransferRequest} className="space-y-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-bold tracking-widest uppercase text-stone-400 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        Proposed New Owner Full Name *
+                      </label>
+                      <input
+                        className={inputClass}
+                        value={transferNewOwnerName}
+                        onChange={(e) => setTransferNewOwnerName(e.target.value)}
+                        placeholder="e.g. Ramesh Varma"
+                        disabled={transferBusy}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold tracking-widest uppercase text-stone-400 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        Proposed Recipient Ethereum Address (0x...) *
+                      </label>
+                      <input
+                        className={inputClass}
+                        value={transferNewOwner}
+                        onChange={(e) => setTransferNewOwner(e.target.value)}
+                        placeholder="0x..."
+                        disabled={transferBusy}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold tracking-widest uppercase text-stone-400 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Conveyance Reason / Registry Notes (Optional)
+                    </label>
+                    <input
+                      className={inputClass}
+                      value={transferNotes}
+                      onChange={(e) => setTransferNotes(e.target.value)}
+                      placeholder="e.g. Registered title conveyance executed under registry order"
+                      disabled={transferBusy}
+                    />
+                  </div>
+
+                  <div className="pt-4 border-t border-stone-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <button
+                      type="submit"
+                      disabled={transferBusy}
+                      className={buttonSecondaryClass}
+                    >
+                      <span className="material-symbols-outlined text-sm">support_agent</span>
+                      Prepare Transfer Request & Generate Link
+                    </button>
+
+                    {/* Direct Owner Execution Button (Enabled ONLY if current wallet is the owner) */}
+                    {(() => {
+                      const rec = onChainRecords[transferPropId];
+                      const isOwnerConnected = Boolean(
+                        account &&
+                        rec?.currentOwner &&
+                        normalizeAddress(account) === normalizeAddress(rec.currentOwner)
+                      );
+                      const isRestricted = rec && rec.status !== 0;
+
+                      return (
+                        <div className="flex items-center gap-3">
+                          {isOwnerConnected ? (
+                            <button
+                              type="button"
+                              onClick={handleTransferSubmit}
+                              disabled={transferBusy || !isSepolia || isRestricted}
+                              className={buttonPrimaryClass}
+                            >
+                              {transferBusy ? (
+                                <>
+                                  <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+                                  Signing in MetaMask...
+                                </>
+                              ) : (
+                                <>
+                                  <span className="material-symbols-outlined text-sm">swap_horiz</span>
+                                  Sign & Execute Transfer on Sepolia
+                                </>
+                              )}
+                            </button>
+                          ) : (
+                            <div className="text-[11px] text-amber-800 italic text-right font-serif max-w-md">
+                              {account && isAdminMatch
+                                ? 'Admin connected: Only the current registered owner can sign transferProperty(). Share the link above with the owner.'
+                                : 'Connect owner wallet to sign transferProperty().'}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
+
+          {/* Pending Owner Authorization Queue Table */}
+          <div className="bg-white border border-stone-200 rounded-sm p-6 shadow-sm">
+            <h4 className="text-sm font-black tracking-tight text-stone-900 uppercase mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
+              Pending Owner Authorizations Queue
+            </h4>
+            {(() => {
+              const pendingItems = websiteListings.filter(
+                (l) => l.pendingTransferRequest?.status === 'PENDING_OWNER_AUTHORIZATION'
+              );
+
+              if (pendingItems.length === 0) {
+                return (
+                  <p className="text-xs text-stone-400 font-serif italic py-4">
+                    No administrator-assisted transfer requests currently awaiting owner authorization.
+                  </p>
+                );
+              }
+
+              return (
+                <div className="overflow-x-auto border border-stone-200 rounded-sm">
+                  <table className="w-full text-xs" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    <thead className="bg-[#f5f4ed] border-b border-stone-200">
+                      <tr>
+                        <th className="py-2.5 px-4 text-left font-black text-[10px] uppercase tracking-widest text-stone-400">Property</th>
+                        <th className="py-2.5 px-4 text-left font-black text-[10px] uppercase tracking-widest text-stone-400">Current Owner</th>
+                        <th className="py-2.5 px-4 text-left font-black text-[10px] uppercase tracking-widest text-stone-400">Proposed New Owner</th>
+                        <th className="py-2.5 px-4 text-left font-black text-[10px] uppercase tracking-widest text-stone-400">Initiated</th>
+                        <th className="py-2.5 px-4 text-right font-black text-[10px] uppercase tracking-widest text-stone-400">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stone-100">
+                      {pendingItems.map((item) => {
+                        const req = item.pendingTransferRequest;
+                        const link = `${window.location.origin}/transfers?property=${encodeURIComponent(item.id)}`;
+
+                        return (
+                          <tr key={item.id} className="hover:bg-[#fbf9f4]">
+                            <td className="py-3 px-4">
+                              <span className="font-bold text-stone-900 block">{item.name}</span>
+                              <span className="font-mono text-[10px] text-emerald-800">
+                                {item.blockchainPropertyId ? `Blockchain #${item.blockchainPropertyId}` : item.id}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 font-mono text-[11px] text-stone-600">
+                              {formatAddress(req.currentOwnerWallet || item.ownerWallet || '—')}
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="font-bold text-stone-900 block">{req.proposedOwnerName}</span>
+                              <span className="font-mono text-[10px] text-stone-600">{formatAddress(req.proposedOwnerWallet)}</span>
+                            </td>
+                            <td className="py-3 px-4 text-stone-500 font-serif italic text-[11px]">
+                              {new Date(req.initiatedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    navigator.clipboard?.writeText(link);
+                                    alert('Owner authorization link copied to clipboard!');
+                                  }}
+                                  className="text-[10px] font-bold uppercase tracking-wider text-purple-900 bg-purple-50 border border-purple-200 px-2 py-1 rounded-sm hover:bg-purple-100"
+                                >
+                                  Copy Link
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => cancelTransferRequest(item.id)}
+                                  className="text-[10px] font-bold uppercase tracking-wider text-rose-700 hover:underline"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
+          </div>
         </div>
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* TAB 4: LOOKUP & INTEGRITY VERIFICATION                             */}
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      {activeTab === 'lookup' && (
+      {(activeTab === 'verification' || activeTab === 'lookup') && (
         <div className="space-y-8 max-w-4xl">
           <div className="bg-white border border-stone-200 rounded-sm p-8 shadow-sm">
-            <h3 className="text-2xl font-serif italic text-stone-900 mb-4">On-Chain Property Lookup</h3>
+            <h3 className="text-2xl font-serif italic text-stone-900 mb-4">On-Chain Property Lookup & Integrity</h3>
+            <p className="text-xs font-serif text-stone-500 mb-6">
+              Query on-chain smart contract state via <code className="font-mono font-bold">getProperty()</code> and verify document SHA-256 integrity using <code className="font-mono font-bold">verifyProperty()</code>.
+            </p>
             <form onSubmit={handleLookupSubmit} className="flex gap-3">
               <input
                 className={inputClass}
@@ -1802,12 +2304,28 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                     <span className="font-mono font-bold text-stone-900">#{lookupRecord.propertyId}</span>
                   </div>
                   <div>
-                    <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Status</span>
-                    <span className="font-bold">{STATUS_ENUM[lookupRecord.status] || 'Unknown'}</span>
+                    <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Current Status</span>
+                    <span className="font-bold">{STATUS_ENUM[lookupRecord.status] || 'Unknown'} ({lookupRecord.status})</span>
                   </div>
                   <div className="col-span-2">
                     <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Current Owner</span>
                     <span className="font-mono break-all">{lookupRecord.currentOwner}</span>
+                  </div>
+                  <div>
+                    <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Registered By</span>
+                    <span className="font-mono break-all">{lookupRecord.registeredBy || '—'}</span>
+                  </div>
+                  <div>
+                    <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Registration Date & Time</span>
+                    <span className="font-medium text-stone-800">
+                      {lookupRecord.registrationTimestamp && lookupRecord.registrationTimestamp !== '0'
+                        ? `${new Date(Number(lookupRecord.registrationTimestamp) * 1000).toLocaleString()} (Unix: ${lookupRecord.registrationTimestamp})`
+                        : '—'}
+                    </span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Location Reference</span>
+                    <span className="font-medium text-stone-800">{lookupRecord.locationReference || '—'}</span>
                   </div>
                   <div className="col-span-2">
                     <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Document Hash</span>
@@ -1817,12 +2335,17 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
 
                 {lookupHistory.length > 0 && (
                   <div>
-                    <h4 className="font-bold uppercase tracking-wider text-stone-400 text-xs mb-3">Ownership Chain of Custody</h4>
+                    <h4 className="font-bold uppercase tracking-wider text-stone-400 text-xs mb-3">Ownership Chain of Custody (getOwnershipHistory)</h4>
                     <ol className="space-y-1.5 text-xs font-mono">
                       {lookupHistory.map((addr, idx) => (
-                        <li key={`${addr}-${idx}`} className="bg-[#fbf9f4] p-2 rounded-sm border border-stone-200 flex items-center gap-2">
-                          <span className="font-bold text-stone-400">{idx + 1}.</span>
-                          <span className="break-all">{addr}</span>
+                        <li key={`${addr}-${idx}`} className="bg-[#fbf9f4] p-2 rounded-sm border border-stone-200 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-stone-400">{idx + 1}.</span>
+                            <span className="break-all">{addr}</span>
+                          </div>
+                          <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-stone-400">
+                            {idx === 0 ? 'Initial Owner' : idx === lookupHistory.length - 1 ? 'Current Owner' : 'Prior Owner'}
+                          </span>
                         </li>
                       ))}
                     </ol>
@@ -1844,27 +2367,455 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* TAB 5: BULK REGISTRATION                                           */}
+      {/* TAB 5: ON-CHAIN STATUS MANAGEMENT                                  */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
+      {activeTab === 'status' && (
+        <div className="space-y-8 max-w-4xl">
+          <div className="bg-white border border-stone-200 rounded-sm p-8 shadow-sm">
+            <div className="mb-6 border-b border-stone-200 pb-4">
+              <h3 className="text-2xl font-serif italic text-stone-900">Governance Status Management</h3>
+              <p className="text-xs font-serif text-stone-500 mt-1">
+                Admin-only: update property status to Registered (0), Disputed (1), or Suspended (2) via <code className="font-mono">updatePropertyStatus()</code>.
+              </p>
+            </div>
+
+            {/* Target Property Picker */}
+            <div className="mb-6">
+              <label className="block text-[10px] font-bold tracking-widest uppercase text-stone-400 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                Select On-Chain Registered Property
+              </label>
+              <select
+                className={inputClass}
+                value={selectedTarget?.blockchainPropertyId || ''}
+                onChange={(e) => {
+                  const bId = e.target.value;
+                  const item = propertyRoster.find((p) => p.blockchainPropertyId === bId);
+                  if (item) {
+                    setSelectedTarget(item);
+                    const curStatus = typeof item.onChainStatus === 'number' ? item.onChainStatus : 0;
+                    setSelectedNewStatus(curStatus === 1 ? '0' : '1');
+                    setStatusReason('');
+                    setIsConfirmationStep(false);
+                    setModalError('');
+                  } else {
+                    setSelectedTarget(null);
+                  }
+                }}
+              >
+                <option value="">-- Choose a property from on-chain roster --</option>
+                {propertyRoster
+                  .filter((p) => !p.isOffChain && p.blockchainPropertyId)
+                  .map((p) => (
+                    <option key={p.blockchainPropertyId} value={p.blockchainPropertyId}>
+                      Property #{p.blockchainPropertyId} — {p.name} [{p.city}] (Status: {typeof p.onChainStatus === 'number' ? STATUS_ENUM[p.onChainStatus] : p.onChainStatus})
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            {selectedTarget ? (
+              <div className="space-y-6">
+                {/* Current Target Snapshot Card */}
+                <div className="bg-[#fbf9f4] border border-stone-200 p-5 rounded-sm">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                    <div>
+                      <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">On-Chain ID</span>
+                      <span className="font-mono font-bold text-stone-900">#{selectedTarget.blockchainPropertyId}</span>
+                    </div>
+                    <div>
+                      <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Current Status</span>
+                      <span className={`font-mono font-bold px-2 py-0.5 rounded-sm inline-block ${
+                        selectedTarget.onChainStatus === 0
+                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                          : selectedTarget.onChainStatus === 1
+                          ? 'bg-amber-50 text-amber-900 border border-amber-300'
+                          : selectedTarget.onChainStatus === 2
+                          ? 'bg-rose-50 text-rose-900 border border-rose-300'
+                          : 'bg-stone-100 text-stone-600'
+                      }`}>
+                        {typeof selectedTarget.onChainStatus === 'number' ? STATUS_ENUM[selectedTarget.onChainStatus] : selectedTarget.onChainStatus}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Current Owner</span>
+                      <span className="font-mono text-stone-700 truncate block" title={selectedTarget.currentOwner}>
+                        {formatAddress(selectedTarget.currentOwner)}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-bold uppercase tracking-wider text-stone-400 block mb-1">Registered By</span>
+                      <span className="font-mono text-stone-700 truncate block" title={selectedTarget.registeredBy}>
+                        {formatAddress(selectedTarget.registeredBy || '—')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Form or Confirmation */}
+                {!isConfirmationStep ? (
+                  <form onSubmit={handleProceedToConfirmation} className="space-y-6">
+                    <div>
+                      <label className="block text-[10px] font-bold tracking-widest uppercase text-stone-400 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        Proposed On-Chain Status (PropertyStatus enum)
+                      </label>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        {[
+                          { val: '0', label: 'Registered (0)', desc: 'Active good standing. Ownership transfers permitted.', border: 'border-emerald-300' },
+                          { val: '1', label: 'Disputed (1)', desc: 'Ownership contested. Blocks all transferProperty transactions.', border: 'border-amber-300' },
+                          { val: '2', label: 'Suspended (2)', desc: 'Legal regulatory hold. Blocks all transferProperty transactions.', border: 'border-rose-300' },
+                        ].map((opt) => (
+                          <label
+                            key={opt.val}
+                            className={`p-4 rounded-sm border cursor-pointer transition-all flex flex-col justify-between ${
+                              selectedNewStatus === opt.val
+                                ? `bg-white shadow-sm ring-2 ring-stone-900 ${opt.border}`
+                                : 'bg-[#fbf9f4] border-stone-200 hover:bg-stone-50'
+                            }`}
+                          >
+                            <div>
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="font-bold text-xs uppercase tracking-wider text-stone-900">{opt.label}</span>
+                                <input
+                                  type="radio"
+                                  name="newStatus"
+                                  value={opt.val}
+                                  checked={selectedNewStatus === opt.val}
+                                  onChange={(e) => setSelectedNewStatus(e.target.value)}
+                                  className="accent-stone-900"
+                                />
+                              </div>
+                              <p className="text-[11px] text-stone-500 leading-snug">{opt.desc}</p>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold tracking-widest uppercase text-stone-400 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        Official Justification Reason (Required for On-Chain Event)
+                      </label>
+                      <textarea
+                        className={inputClass}
+                        rows={3}
+                        value={statusReason}
+                        onChange={(e) => setStatusReason(e.target.value)}
+                        placeholder="Detail the registry decree, court order, or verification note..."
+                        required
+                      />
+                      <p className="text-[11px] text-stone-400 mt-1 italic">
+                        This reason is recorded permanently in the Sepolia smart contract log via the <code className="font-mono">PropertyStatusUpdated</code> event.
+                      </p>
+                    </div>
+
+                    {(selectedNewStatus === '1' || selectedNewStatus === '2') && (
+                      <div className="p-4 rounded-sm bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-start gap-3">
+                        <span className="material-symbols-outlined text-amber-600 text-base shrink-0 mt-0.5">lock</span>
+                        <div className="space-y-1">
+                          <p className="font-bold uppercase tracking-wider text-[11px]">Transfer Lockout Active</p>
+                          <p className="leading-relaxed">
+                            Updating this property to <strong>{STATUS_ENUM[Number(selectedNewStatus)]}</strong> triggers Solidity safeguard:
+                            <code className="font-mono ml-1 bg-amber-100 px-1 py-0.5 rounded">require(status == PropertyStatus.Registered)</code>.
+                            Any attempt to call <code className="font-mono">transferProperty()</code> will revert until restored.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {modalError && (
+                      <div className="p-3 bg-red-50 border border-red-200 text-red-800 text-xs rounded-sm">
+                        {modalError}
+                      </div>
+                    )}
+
+                    <div className="pt-4 border-t border-stone-200 flex justify-end gap-3">
+                      <button
+                        type="submit"
+                        disabled={!statusReason.trim() || !canAdminTransact}
+                        className={buttonPrimaryClass}
+                      >
+                        <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        Review & Prepare Transaction
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="bg-[#fbf9f4] p-5 rounded-sm border border-stone-200 space-y-4">
+                      <h4 className="font-bold text-xs uppercase tracking-widest text-stone-400">Transaction Confirmation Summary</h4>
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <span className="text-stone-400 block mb-1">Target Property</span>
+                          <span className="font-mono font-bold text-stone-900">Property #{selectedTarget.blockchainPropertyId}</span>
+                        </div>
+                        <div>
+                          <span className="text-stone-400 block mb-1">Contract Method</span>
+                          <span className="font-mono font-bold text-stone-900">updatePropertyStatus(uint256, uint8, string)</span>
+                        </div>
+                        <div>
+                          <span className="text-stone-400 block mb-1">New Status</span>
+                          <span className="font-mono font-bold text-stone-900">{STATUS_ENUM[Number(selectedNewStatus)]} ({selectedNewStatus})</span>
+                        </div>
+                        <div>
+                          <span className="text-stone-400 block mb-1">Authorized Admin</span>
+                          <span className="font-mono text-stone-700">{formatAddress(contractAdmin)}</span>
+                        </div>
+                        <div className="col-span-2">
+                          <span className="text-stone-400 block mb-1">Event Justification Reason</span>
+                          <p className="font-serif italic text-stone-800 bg-white p-3 rounded-sm border border-stone-200">
+                            "{statusReason}"
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {txState.phase === 'confirmed' && (
+                      <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs rounded-sm space-y-2">
+                        <div className="flex items-center gap-2 font-bold">
+                          <span className="material-symbols-outlined text-sm">check_circle</span>
+                          Status Successfully Updated on Sepolia!
+                        </div>
+                        <p>Property #{selectedTarget.blockchainPropertyId} is now set to <strong>{STATUS_ENUM[Number(selectedNewStatus)]}</strong>.</p>
+                        {txState.txHash && (
+                          <p className="font-mono">
+                            Tx: <a href={`${SEPOLIA_EXPLORER}/tx/${txState.txHash}`} target="_blank" rel="noreferrer" className="underline text-emerald-700">
+                              {txState.txHash}
+                            </a>
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {modalError && (
+                      <div className="p-3 bg-red-50 border border-red-200 text-red-800 text-xs rounded-sm">
+                        {modalError}
+                      </div>
+                    )}
+
+                    <div className="pt-4 border-t border-stone-200 flex justify-end gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setIsConfirmationStep(false)}
+                        disabled={txState.phase === 'pending' || txState.phase === 'prompting'}
+                        className={buttonSecondaryClass}
+                      >
+                        Back
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleConfirmAndSendTx}
+                        disabled={txState.phase === 'pending' || txState.phase === 'prompting' || !canAdminTransact}
+                        className={buttonPrimaryClass}
+                      >
+                        {txState.phase === 'prompting' ? (
+                          <>
+                            <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+                            Confirm in MetaMask...
+                          </>
+                        ) : txState.phase === 'pending' ? (
+                          <>
+                            <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+                            Mining on Sepolia...
+                          </>
+                        ) : (
+                          <>
+                            <span className="material-symbols-outlined text-sm">gavel</span>
+                            Sign & Broadcast to Sepolia
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-12 border border-dashed border-stone-300 rounded-sm bg-[#fbf9f4]">
+                <span className="material-symbols-outlined text-4xl text-stone-300 mb-2">gavel</span>
+                <p className="text-stone-500 font-serif text-sm">Select an on-chain registered property above or click "Governance" on any record in the Property Roster.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* TAB 6: ON-CHAIN CONTRACT EVENTS FEED                                */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {activeTab === 'events' && (
+        <div className="space-y-6 max-w-5xl">
+          <div className="bg-white border border-stone-200 rounded-sm p-6 shadow-sm">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-stone-200 pb-5 mb-6">
+              <div>
+                <h3 className="text-2xl font-serif italic text-stone-900">On-Chain Contract Events Feed</h3>
+                <p className="text-xs font-serif text-stone-500 mt-1">
+                  Live indexing of emitted Sepolia smart contract logs: <code className="font-mono font-bold">PropertyRegistered</code>, <code className="font-mono font-bold">PropertyStatusUpdated</code>, and <code className="font-mono font-bold">PropertyTransferred</code>.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={fetchContractEvents}
+                  disabled={isLoadingEvents}
+                  className={buttonSecondaryClass}
+                >
+                  <span className={`material-symbols-outlined text-sm ${isLoadingEvents ? 'animate-spin' : ''}`}>
+                    refresh
+                  </span>
+                  {isLoadingEvents ? 'Scanning Logs...' : 'Refresh Events'}
+                </button>
+              </div>
+            </div>
+
+            {/* Filter Pills */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {[
+                { id: 'ALL', label: 'All Events', count: contractEvents.length },
+                { id: 'PropertyRegistered', label: 'PropertyRegistered', count: contractEvents.filter((e) => e.type === 'PropertyRegistered').length },
+                { id: 'PropertyStatusUpdated', label: 'PropertyStatusUpdated', count: contractEvents.filter((e) => e.type === 'PropertyStatusUpdated').length },
+                { id: 'PropertyTransferred', label: 'PropertyTransferred', count: contractEvents.filter((e) => e.type === 'PropertyTransferred').length },
+              ].map((pill) => (
+                <button
+                  key={pill.id}
+                  type="button"
+                  onClick={() => setSelectedEventType(pill.id)}
+                  className={`text-xs px-3.5 py-1.5 rounded-sm font-bold uppercase tracking-wider flex items-center gap-2 transition-colors border ${
+                    selectedEventType === pill.id
+                      ? 'bg-stone-900 text-white border-stone-900'
+                      : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                  }`}
+                >
+                  <span>{pill.label}</span>
+                  <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                    selectedEventType === pill.id ? 'bg-white/20 text-white' : 'bg-stone-200 text-stone-700'
+                  }`}>
+                    {pill.count}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {eventsError && (
+              <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-sm text-xs text-amber-900 flex items-center justify-between">
+                <span>{eventsError}</span>
+                <button type="button" onClick={fetchContractEvents} className="underline font-bold ml-2">Retry</button>
+              </div>
+            )}
+
+            {/* Event List */}
+            {isLoadingEvents && contractEvents.length === 0 ? (
+              <div className="text-center py-12 border border-stone-200 rounded-sm bg-[#fbf9f4]">
+                <span className="material-symbols-outlined text-4xl text-stone-400 animate-spin mb-2">progress_activity</span>
+                <p className="text-stone-600 font-serif text-sm">Querying Sepolia event logs via queryFilter...</p>
+              </div>
+            ) : contractEvents.length === 0 ? (
+              <div className="text-center py-12 border border-stone-200 rounded-sm bg-[#fbf9f4]">
+                <span className="material-symbols-outlined text-4xl text-stone-300 mb-2">history_edu</span>
+                <p className="text-stone-600 font-serif text-sm">No contract events indexed in the scanned block range.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto border border-stone-200 rounded-sm">
+                <table className="w-full text-xs" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  <thead className="bg-[#f5f4ed] border-b border-stone-200">
+                    <tr>
+                      <th className="py-3 px-4 text-left font-black text-[10px] uppercase tracking-widest text-stone-400">Event Type</th>
+                      <th className="py-3 px-4 text-left font-black text-[10px] uppercase tracking-widest text-stone-400">Property ID</th>
+                      <th className="py-3 px-4 text-left font-black text-[10px] uppercase tracking-widest text-stone-400">Decoded Event Arguments</th>
+                      <th className="py-3 px-4 text-left font-black text-[10px] uppercase tracking-widest text-stone-400">Block</th>
+                      <th className="py-3 px-4 text-right font-black text-[10px] uppercase tracking-widest text-stone-400">Sepolia Explorer</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-stone-100">
+                    {contractEvents
+                      .filter((e) => selectedEventType === 'ALL' || e.type === selectedEventType)
+                      .map((evt) => {
+                        const isReg = evt.type === 'PropertyRegistered';
+                        const isStat = evt.type === 'PropertyStatusUpdated';
+                        const isTrans = evt.type === 'PropertyTransferred';
+
+                        return (
+                          <tr key={evt.id} className="hover:bg-[#fbf9f4] transition-colors">
+                            <td className="py-3 px-4">
+                              <span className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider inline-block ${
+                                isReg
+                                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                  : isStat
+                                  ? 'bg-amber-50 text-amber-900 border border-amber-300'
+                                  : 'bg-blue-50 text-blue-900 border border-blue-200'
+                              }`}>
+                                {evt.type}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 font-mono font-bold text-stone-900">
+                              #{evt.propertyId}
+                            </td>
+                            <td className="py-3 px-4">
+                              {isReg && (
+                                <div className="space-y-0.5 font-mono text-[11px]">
+                                  <p><span className="text-stone-400">Owner:</span> {formatAddress(evt.initialOwner)}</p>
+                                  <p><span className="text-stone-400">Ref:</span> {evt.locationReference}</p>
+                                  <p className="truncate max-w-[280px]" title={evt.documentHash}><span className="text-stone-400">DocHash:</span> {evt.documentHash}</p>
+                                </div>
+                              )}
+                              {isStat && (
+                                <div className="space-y-0.5 text-[11px]">
+                                  <p className="font-mono">
+                                    <span className="text-stone-400">New Status:</span>{' '}
+                                    <span className="font-bold text-stone-900">{STATUS_ENUM[evt.newStatus] || evt.newStatus} ({evt.newStatus})</span>
+                                  </p>
+                                  <p className="font-serif italic text-stone-700">"{evt.reason}"</p>
+                                </div>
+                              )}
+                              {isTrans && (
+                                <div className="space-y-0.5 font-mono text-[11px]">
+                                  <p><span className="text-stone-400">New Owner:</span> {formatAddress(evt.newOwner)}</p>
+                                </div>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 font-mono text-stone-600">
+                              {evt.blockNumber}
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                              <a
+                                href={`${SEPOLIA_EXPLORER}/tx/${evt.txHash}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="font-mono text-xs text-stone-600 hover:text-stone-900 underline inline-flex items-center gap-1"
+                              >
+                                {evt.txHash.slice(0, 8)}...
+                                <span className="material-symbols-outlined text-[12px]">open_in_new</span>
+                              </a>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
       {activeTab === 'bulk' && (
         <div className="space-y-8 max-w-5xl">
 
-          {/* ── Safety Banner ── */}
+          {/* ΓöÇΓöÇ Safety Banner ΓöÇΓöÇ */}
           <div className="bg-amber-50 border border-amber-300 rounded-sm p-5 flex items-start gap-4">
             <span className="material-symbols-outlined text-amber-600 text-2xl shrink-0">warning</span>
             <div>
               <h3 className="text-xs font-black uppercase tracking-[0.2em] text-amber-900" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Bulk On-Chain Registration — Real Sepolia Transactions
+                Bulk On-Chain Registration ΓÇö Real Sepolia Transactions
               </h3>
               <p className="text-xs text-amber-800 mt-1.5 leading-relaxed">
-                Each registration sends a real Sepolia transaction via MetaMask — MetaMask will prompt you for every single TX.
-                Start with a small batch (5–10) first to verify gas and flow. All registered properties immediately appear as
+                Each registration sends a real Sepolia transaction via MetaMask ΓÇö MetaMask will prompt you for every single TX.
+                Start with a small batch (5ΓÇô10) first to verify gas and flow. All registered properties immediately appear as
                 <strong> Blockchain registered</strong> on the website after confirmation.
               </p>
             </div>
           </div>
 
-          {/* ── Configuration & Candidate Preview ── */}
+          {/* ΓöÇΓöÇ Configuration & Candidate Preview ΓöÇΓöÇ */}
           <div className="bg-white border border-stone-200 rounded-sm p-8 shadow-sm">
             <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
               <div>
@@ -1921,7 +2872,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                   onChange={(e) => setBulkGasPerTx(Math.max(80000, Number(e.target.value)))}
                   disabled={bulkPhase === 'running'} className={inputClass}
                 />
-                <p className="text-[11px] text-stone-400 mt-1 italic">registerProperty() typically uses 120,000–135,000 gas.</p>
+                <p className="text-[11px] text-stone-400 mt-1 italic">registerProperty() typically uses 120,000ΓÇô135,000 gas.</p>
               </div>
             </div>
 
@@ -1948,13 +2899,13 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                           <td className="py-2.5 px-4 font-mono text-stone-700">{item.id}</td>
                           <td className="py-2.5 px-4 font-mono font-bold text-stone-900">{item.propertyRef}</td>
                           <td className="py-2.5 px-4 text-stone-600 max-w-[180px] truncate">{item.name}</td>
-                          <td className="py-2.5 px-4 font-mono text-stone-500">{formatAddress(item.initialOwner || account || '—')}</td>
+                          <td className="py-2.5 px-4 font-mono text-stone-500">{formatAddress(item.initialOwner || account || 'ΓÇö')}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                   {bulkCandidates.length > 5 && (
-                    <p className="text-center text-[11px] text-stone-400 py-2 italic">… and {bulkCandidates.length - 5} more</p>
+                    <p className="text-center text-[11px] text-stone-400 py-2 italic">ΓÇª and {bulkCandidates.length - 5} more</p>
                   )}
                 </div>
               </div>
@@ -2018,12 +2969,12 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
             )}
           </div>
 
-          {/* ── Live Progress Log ── */}
+          {/* ΓöÇΓöÇ Live Progress Log ΓöÇΓöÇ */}
           {(bulkPhase === 'running' || bulkPhase === 'paused' || bulkPhase === 'done') && bulkTotal > 0 && (
             <div className="bg-white border border-stone-200 rounded-sm p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                 <h3 className="text-sm font-black uppercase tracking-tight text-stone-900" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  {bulkPhase === 'running' ? '⟳ Registration in Progress…' : bulkPhase === 'done' ? '✓ Batch Complete' : '⏸ Paused'}
+                  {bulkPhase === 'running' ? 'Γƒ│ Registration in ProgressΓÇª' : bulkPhase === 'done' ? 'Γ£ô Batch Complete' : 'ΓÅ╕ Paused'}
                 </h3>
                 <div className="flex items-center gap-4 text-xs">
                   <span className="text-emerald-700 font-bold">{bulkDone} confirmed</span>
@@ -2036,10 +2987,10 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                   style={{ width: `${bulkTotal > 0 ? Math.round(((bulkDone + bulkFailed) / bulkTotal) * 100) : 0}%` }} />
               </div>
               <div className="bg-stone-950 rounded-sm p-4 max-h-64 overflow-y-auto space-y-1.5 font-mono text-[11px]">
-                {bulkLog.length === 0 && <p className="text-stone-500 italic">Initialising…</p>}
+                {bulkLog.length === 0 && <p className="text-stone-500 italic">InitialisingΓÇª</p>}
                 {bulkLog.map((entry, idx) => {
                   const color = entry.status === 'confirmed' ? 'text-emerald-400' : entry.status === 'failed' ? 'text-red-400' : entry.status === 'mining' ? 'text-amber-300' : entry.status === 'stopped' ? 'text-amber-500' : entry.status === 'error' ? 'text-red-300' : entry.status === 'skipped' ? 'text-stone-500' : 'text-stone-300';
-                  const icon = entry.status === 'confirmed' ? '✓' : entry.status === 'failed' ? '✗' : entry.status === 'mining' ? '⟳' : entry.status === 'stopped' ? '⏸' : entry.status === 'error' ? '!' : entry.status === 'skipped' ? '–' : '·';
+                  const icon = entry.status === 'confirmed' ? 'Γ£ô' : entry.status === 'failed' ? 'Γ£ù' : entry.status === 'mining' ? 'Γƒ│' : entry.status === 'stopped' ? 'ΓÅ╕' : entry.status === 'error' ? '!' : entry.status === 'skipped' ? 'ΓÇô' : '┬╖';
                   return (
                     <div key={idx} className={`flex items-start gap-2 ${color}`}>
                       <span className="shrink-0 font-bold w-4">{icon}</span>
@@ -2047,7 +2998,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                         {entry.websiteId && <span className="text-stone-400 mr-2">[{entry.websiteId} / {entry.ref}]</span>}
                         {entry.status === 'confirmed' && entry.blockchainId && (
                           <span>On-chain ID <strong className="text-emerald-300">#{entry.blockchainId}</strong>
-                            {entry.txHash && <a href={`${SEPOLIA_EXPLORER}/tx/${entry.txHash}`} target="_blank" rel="noreferrer" className="ml-2 underline text-emerald-500">↗ Etherscan</a>}
+                            {entry.txHash && <a href={`${SEPOLIA_EXPLORER}/tx/${entry.txHash}`} target="_blank" rel="noreferrer" className="ml-2 underline text-emerald-500">Γåù Etherscan</a>}
                           </span>
                         )}
                         {entry.note && <span>{entry.note}</span>}
@@ -2061,13 +3012,13 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                 <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-sm text-xs text-emerald-900 flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm">check_circle</span>
                   Batch complete. {bulkDone} properties registered on Sepolia and labelled <strong>Blockchain registered</strong> in the website store.
-                  {bulkFailed > 0 && ` ${bulkFailed} failed — reset and retry.`}
+                  {bulkFailed > 0 && ` ${bulkFailed} failed ΓÇö reset and retry.`}
                 </div>
               )}
             </div>
           )}
 
-          {/* ── CLI Reference ── */}
+          {/* ΓöÇΓöÇ CLI Reference ΓöÇΓöÇ */}
           <div className="bg-white border border-stone-200 rounded-sm p-6 shadow-sm">
             <h3 className="text-sm font-black uppercase tracking-tight text-stone-900 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>CLI Alternative: register-demo-sepolia.js</h3>
             <p className="text-xs text-stone-500 italic mb-4">For large batches (&gt;50), the CLI script handles rate-limiting, progress-saving, and resume automatically.</p>
@@ -2084,9 +3035,9 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
       )}
 
 
-      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
       {/* TAB 6: SEPOLIA TEST ETH FUNDING                                    */}
-      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
       {activeTab === 'funding' && (
         <div className="space-y-8 max-w-4xl">
           {/* Disclaimer Banner */}
@@ -2094,7 +3045,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
             <span className="material-symbols-outlined text-stone-300 text-2xl shrink-0">info</span>
             <div>
               <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Sepolia Testnet ETH — Not Real Money
+                Sepolia Testnet ETH ΓÇö Not Real Money
               </h3>
               <p className="text-xs text-stone-300 mt-1.5 leading-relaxed">
                 Sepolia ETH has no monetary value. It exists solely on the Sepolia testnet for development and testing.
@@ -2173,7 +3124,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                   </span>
                 ) : (
                   <span className="text-2xl font-black text-stone-300 tracking-tighter" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    {isFetchingBalance ? 'Fetching...' : '—'}
+                    {isFetchingBalance ? 'Fetching...' : 'ΓÇö'}
                   </span>
                 )}
                 <button
@@ -2243,7 +3194,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                   url: 'https://sepoliafaucet.com',
                   limit: '0.5 ETH / day',
                   icon: 'bolt',
-                  requirements: 'Alchemy account. Requires ≥ 0.001 ETH on Ethereum mainnet.',
+                  requirements: 'Alchemy account. Requires ΓëÑ 0.001 ETH on Ethereum mainnet.',
                   color: 'purple',
                 },
                 {
@@ -2257,7 +3208,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                 {
                   name: 'QuickNode Sepolia Faucet',
                   url: 'https://faucet.quicknode.com/ethereum/sepolia',
-                  limit: '0.05–0.1 ETH / day',
+                  limit: '0.05ΓÇô0.1 ETH / day',
                   icon: 'flash_on',
                   requirements: 'QuickNode account or Twitter/X verification.',
                   color: 'orange',
@@ -2291,9 +3242,9 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                 Tips for Bulk Registration Funding
               </p>
               <ul className="list-disc list-inside space-y-1 text-stone-500 leading-relaxed">
-                <li>A batch of 100 registrations typically requires <strong>0.06–0.15 Sepolia ETH</strong> at current gas prices.</li>
-                <li>A full batch of 1,000 registrations may require <strong>0.6–1.5 Sepolia ETH</strong> — use multiple faucets over several days.</li>
-                <li>The PK910 PoW faucet accumulates ETH over time through browser mining — ideal for larger amounts.</li>
+                <li>A batch of 100 registrations typically requires <strong>0.06ΓÇô0.15 Sepolia ETH</strong> at current gas prices.</li>
+                <li>A full batch of 1,000 registrations may require <strong>0.6ΓÇô1.5 Sepolia ETH</strong> ΓÇö use multiple faucets over several days.</li>
+                <li>The PK910 PoW faucet accumulates ETH over time through browser mining ΓÇö ideal for larger amounts.</li>
                 <li>Always check your balance in the <strong>Refresh Balance</strong> section above before starting a large batch.</li>
                 <li>Run the CLI auditor script (<code className="font-mono">npm run sepolia:check-funding</code>) for a precise live estimate.</li>
               </ul>
@@ -2320,9 +3271,9 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
         </div>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
       {/* STATUS UPDATE & CONFIRMATION MODAL (Requirements 6, 7, 8, 9, 11)   */}
-      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */}
       {isStatusModalOpen && selectedTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
@@ -2347,7 +3298,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                 {isConfirmationStep ? 'Confirm Status Update' : 'Update Property On-Chain Status'}
               </h2>
               <p className="text-xs font-serif text-stone-500 mt-1">
-                Property #{selectedTarget.blockchainPropertyId} · {selectedTarget.name}
+                Property #{selectedTarget.blockchainPropertyId} ┬╖ {selectedTarget.name}
               </p>
             </div>
 
@@ -2385,7 +3336,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                           rel="noreferrer"
                           className="font-mono text-[11px] underline block mt-2 hover:text-stone-900 break-all"
                         >
-                          View Transaction: {txState.txHash} ↗
+                          View Transaction: {txState.txHash} Γåù
                         </a>
                       )}
                     </div>
@@ -2411,7 +3362,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                           rel="noreferrer"
                           className="font-mono text-[11px] underline block mt-2 text-emerald-800 break-all"
                         >
-                          Etherscan Receipt: {txState.txHash} ↗
+                          Etherscan Receipt: {txState.txHash} Γåù
                         </a>
                       )}
                       <div className="mt-4 pt-3 border-t border-emerald-200 flex justify-end">
@@ -2479,9 +3430,9 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                     onChange={(e) => setSelectedNewStatus(e.target.value)}
                     disabled={txState.phase === 'pending' || txState.phase === 'prompting'}
                   >
-                    <option value="0">0 — Registered (Normal / Active)</option>
-                    <option value="1">1 — Disputed (Freezes Ownership Transfers)</option>
-                    <option value="2">2 — Suspended (Freezes Ownership Transfers)</option>
+                    <option value="0">0 ΓÇö Registered (Normal / Active)</option>
+                    <option value="1">1 ΓÇö Disputed (Freezes Ownership Transfers)</option>
+                    <option value="2">2 ΓÇö Suspended (Freezes Ownership Transfers)</option>
                   </select>
                 </div>
 
@@ -2531,7 +3482,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                     disabled={!statusReason.trim() || !canAdminTransact}
                     className={buttonPrimaryClass}
                   >
-                    Review & Confirm ↗
+                    Review & Confirm Γåù
                   </button>
                 </div>
               </form>
@@ -2544,7 +3495,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                   <div className="flex justify-between border-b border-stone-100 pb-2">
                     <span className="font-bold uppercase tracking-wider text-stone-400">Target Property</span>
                     <span className="font-bold text-stone-900">
-                      #{selectedTarget.blockchainPropertyId} — {selectedTarget.name}
+                      #{selectedTarget.blockchainPropertyId} ΓÇö {selectedTarget.name}
                     </span>
                   </div>
                   <div className="flex justify-between border-b border-stone-100 pb-2">
@@ -2595,7 +3546,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
                     disabled={txState.phase === 'pending' || txState.phase === 'prompting'}
                     className={buttonSecondaryClass}
                   >
-                    ← Edit Details
+                    ΓåÉ Edit Details
                   </button>
                   <button
                     type="button"
@@ -2622,7 +3573,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
         </div>
       )}
 
-      {/* ── Toast Notification ── */}
+      {/* ΓöÇΓöÇ Toast Notification ΓöÇΓöÇ */}
       {toastMessage && (
         <div className="fixed bottom-8 right-8 z-50 bg-stone-900 text-white px-6 py-4 rounded-sm shadow-xl flex items-center gap-3 animate-[fade-in_0.3s_ease-out]">
           <span className="material-symbols-outlined text-[#bedafd] text-lg">check_circle</span>
@@ -2633,7 +3584,7 @@ export default function BlockchainManagementDashboard({ embedded = false }) {
             onClick={() => setToastMessage(null)}
             className="text-stone-400 hover:text-white ml-2 text-xs"
           >
-            ✕
+            Γ£ò
           </button>
         </div>
       )}

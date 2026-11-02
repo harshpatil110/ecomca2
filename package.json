@@ -9,6 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "node scripts/test-features.js",
+    "test:registry": "node scripts/test-registry-features.js",
+    "validate": "node scripts/validate-project.js",
     "demo:generate": "node scripts/generate-demo-properties.js",
     "demo:generate:dry": "node scripts/generate-demo-properties.js --dry-run",
     "sepolia:register:dry": "node scripts/register-demo-sepolia.js --dry-run",

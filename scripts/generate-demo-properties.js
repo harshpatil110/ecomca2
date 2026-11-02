@@ -122,11 +122,6 @@ export function generateDemoProperties(count = 1000, initialOwner = DEFAULT_ADMI
     const suffix = ARCHITECTURAL_SUFFIXES[(i * 5 + 11) % ARCHITECTURAL_SUFFIXES.length];
     const name = `${prefix} ${suffix} ${loc.city}`;
 
-    // Price scaling: between ₹3.2 Cr (32,000,000) and ₹48.5 Cr (485,000,000)
-    const baseMultiplier = 32000000 + ((i * 451973) % 453000000);
-    const roundedPrice = Math.round(baseMultiplier / 500000) * 500000;
-    const formattedPrice = formatINR(roundedPrice);
-
     const type = PROPERTY_TYPES[i % PROPERTY_TYPES.length];
     const bedrooms = 3 + (i % 4); // 3, 4, 5, 6
     const bathrooms = bedrooms + (i % 2 === 0 ? 0 : 0.5);
@@ -149,8 +144,6 @@ export function generateDemoProperties(count = 1000, initialOwner = DEFAULT_ADMI
     properties.push({
       id: websiteId,
       name,
-      price: formattedPrice,
-      numericPrice: roundedPrice,
       city: loc.city,
       location: loc.locality,
       type,
@@ -160,14 +153,15 @@ export function generateDemoProperties(count = 1000, initialOwner = DEFAULT_ADMI
       yearBuilt,
       description,
       src: image,
-      status: 'Exclusive',
+      status: 'Registration Required',
+      registryStatus: 'Registration Required',
       views,
       propertyRef,
       initialOwner,
       documentHash: placeholderHash,
       isDemo: true,
       isSyntheticDocument: true,
-      badge: 'Off-chain',
+      badge: 'Registration Required',
       blockchainPropertyId: null,
       blockchainTxHash: null,
       publishedAt: new Date(Date.now() - (1000 - i) * 3600000).toISOString(),
@@ -197,9 +191,8 @@ function runCli() {
   console.log(`    - ID range:      ${properties[0].id} ... ${properties[properties.length - 1].id}`);
   console.log(`    - Ref range:     ${properties[0].propertyRef} ... ${properties[properties.length - 1].propertyRef}`);
   console.log(`    - Cities:        ${Array.from(new Set(properties.map(p => p.city))).join(', ')}`);
-  console.log(`    - Price range:   ${properties[0].price} - ${properties[properties.length - 1].price}`);
   console.log(`    - Demo flag:     isDemo=true, isSyntheticDocument=true`);
-  console.log(`    - Initial badge: Off-chain (unregistered)`);
+  console.log(`    - Initial badge: Registration Required`);
 
   console.log(`\nSample Preview (Record #1):`);
   console.log(JSON.stringify(properties[0], null, 2));

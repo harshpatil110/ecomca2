@@ -20,19 +20,19 @@ export default function PrivacyPolicy() {
             <li><strong>Data Principal:</strong> Refers to you, the natural person to whom the personal data relates.</li>
             <li><strong>Personal Data:</strong> Means any data about an individual who is identifiable by or in relation to such data.</li>
             <li><strong>Sensitive Personal Data or Information (SPDI):</strong> Includes passwords, financial information (bank accounts, credit/debit cards), and biometric data.</li>
-            <li><strong>Platform:</strong> Refers to the website and mobile applications operated by Lumina Realty for real estate services.</li>
-            <li><strong>Services:</strong> Refers to the listing, buying, selling, leasing, and financing of real estate properties facilitated through our Platform.</li>
+            <li><strong>Platform:</strong> Refers to the digital registry portal operated by Lumina Realty for blockchain property deed management.</li>
+            <li><strong>Services:</strong> Refers to digital property registration, document integrity verification, ownership transfer, and blockchain governance of property deeds facilitated through our Platform.</li>
           </ul>
         </section>
 
         <section>
           <h2 className="text-sm font-black tracking-[0.2em] uppercase text-stone-900 mb-4 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>3. Nature of Information Collected</h2>
-          <p className="mb-4">To provide you with our comprehensive real estate services, we collect various categories of information.</p>
+          <p className="mb-4">To provide you with secure digital property registration and deed verification services, we collect various categories of information.</p>
           <ul className="list-disc pl-5 space-y-2 mb-4">
             <li><strong>Contact and Identity Information:</strong> Full name, date of birth, gender, residential address, email address, and mobile number.</li>
             <li><strong>Government Identifiers:</strong> Permanent Account Number (PAN), Aadhaar number (voluntarily provided for KYC), and GST Identification Number (GSTIN) for commercial entities.</li>
-            <li><strong>Financial Information:</strong> Income details, banking details, credit scores, loan eligibility criteria, and transaction histories required for property financing and regulatory compliance.</li>
-            <li><strong>Property Information:</strong> Title deeds, property tax receipts, encumbrance certificates, and photographs for properties listed on our Platform.</li>
+            <li><strong>Financial Information:</strong> Income details, banking details, credit scores, and transaction histories required for regulatory compliance and identity verification.</li>
+            <li><strong>Property Information:</strong> Title deeds, property tax receipts, encumbrance certificates, and photographs for properties registered in the registry.</li>
             <li><strong>Technical Data:</strong> Internet Protocol (IP) addresses, browser types, operating systems, time zone settings, and device identifiers.</li>
             <li><strong>Behavioral Data:</strong> Your browsing history on our Platform, properties viewed, search queries, and interaction with our Customer Relationship Management (CRM) tools.</li>
           </ul>

@@ -17,21 +17,21 @@ export default function TermsOfService() {
         <section>
           <h2 className="text-sm font-black tracking-[0.2em] uppercase text-stone-900 mb-4 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>2. User Responsibilities</h2>
           <p>
-            Users are expected to provide accurate information during the inquiry phase. Our exclusive listings require strict financial qualification; misrepresentation of intent or capacity is grounds for immediate termination of services.
+            Users are expected to provide accurate information during the inquiry phase. Property registration requires accurate ownership provenance and authentic document hashes; misrepresentation is grounds for immediate record suspension or dispute flag.
           </p>
         </section>
 
         <section>
           <h2 className="text-sm font-black tracking-[0.2em] uppercase text-stone-900 mb-4 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>3. Intellectual Property</h2>
           <p>
-            All architectural photography, editorial content, and brand assets displayed on this platform are the exclusive property of Lumina Realty. Unauthorized reproduction, distribution, or commercial use is strictly prohibited.
+            All digital interface designs, smart contract integration architecture, and brand assets displayed on this platform are the proprietary intellectual property of Lumina Realty. Unauthorized reproduction, distribution, or commercial use is strictly prohibited.
           </p>
         </section>
 
         <section>
           <h2 className="text-sm font-black tracking-[0.2em] uppercase text-stone-900 mb-4 font-sans" style={{ fontFamily: 'Inter, sans-serif' }}>4. Limitation of Liability</h2>
           <p>
-            We curate properties with the utmost diligence; however, we do not guarantee the permanent structural standing of any portfolio asset. Buyers are advised to conduct independent appraisals and inspections.
+            We curate properties with the utmost diligence; however, we do not guarantee the permanent structural standing of any portfolio asset. Users are advised to conduct independent physical surveys and municipal title confirmations.
           </p>
         </section>
       </div>

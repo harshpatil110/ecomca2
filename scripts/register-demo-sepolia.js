@@ -47,7 +47,7 @@ if (fs.existsSync(envPath)) {
         }
       }
     }
-  } catch (err) {
+  } catch {
     // ignore .env read error
   }
 }
