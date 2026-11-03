@@ -6,7 +6,6 @@ import { getListingById } from '../services/listingsStore';
 import { SEPOLIA_EXPLORER, REGISTRY_ADDRESS, SEPOLIA_RPC_URLS, isSepoliaNetwork } from '../blockchain/registryConfig';
 import DocumentIntegrityVerification from '../blockchain/DocumentIntegrityVerification';
 import { useRegistryData } from '../services/registryDataService';
-import { useMetaMask } from '../context/MetaMaskContext';
 import StatusModerationModal from '../components/StatusModerationModal';
 
 const STATUS_LABELS = ['Registered', 'Disputed', 'Suspended'];
@@ -35,7 +34,6 @@ function InfoRow({ label, value, mono = false, children }) {
 export default function PropertyRegistryRecord() {
   const { id } = useParams();
   const { records, contractAdmin, refresh } = useRegistryData();
-  const { account } = useMetaMask();
 
   const listing = useMemo(() => {
     const local = getListingById(id);
@@ -51,13 +49,6 @@ export default function PropertyRegistryRecord() {
   const [isModerationOpen, setIsModerationOpen] = useState(false);
 
   const isBlockchain = Boolean(listing?.blockchainPropertyId || listing?.isOnChain);
-
-  const isAdmin = useMemo(() => {
-    if (!account) return false;
-    const adminTarget = contractAdmin || liveChainData?.registeredBy;
-    if (!adminTarget) return false;
-    return account.toLowerCase() === adminTarget.toLowerCase();
-  }, [account, contractAdmin, liveChainData]);
 
   useEffect(() => {
     let active = true;
@@ -460,6 +451,15 @@ export default function PropertyRegistryRecord() {
                   Reason: {listing.statusReason}
                 </p>
               )}
+              <button
+                type="button"
+                onClick={() => setIsModerationOpen(true)}
+                className="mt-4 w-full flex items-center justify-center gap-1.5 bg-stone-900 hover:bg-stone-800 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-2.5 rounded-sm transition-colors shadow-xs"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                <span className="material-symbols-outlined text-xs">gavel</span>
+                Change Status (1. Reg, 2. Disp, 3. Susp)
+              </button>
             </div>
 
             {/* Quick Reference */}
@@ -498,19 +498,18 @@ export default function PropertyRegistryRecord() {
 
             {/* Actions */}
             <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => setIsModerationOpen(true)}
+                className="w-full flex items-center justify-between bg-stone-100 border border-stone-300 text-stone-900 text-[10px] font-bold uppercase tracking-widest px-4 py-3 rounded-sm hover:bg-stone-200 transition-colors"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                <span>Change Property Status</span>
+                <span className="material-symbols-outlined text-sm">gavel</span>
+              </button>
+
               {isBlockchain ? (
                 <>
-                  {isAdmin && (
-                    <button
-                      type="button"
-                      onClick={() => setIsModerationOpen(true)}
-                      className="w-full flex items-center justify-between bg-stone-100 border border-stone-300 text-stone-900 text-[10px] font-bold uppercase tracking-widest px-4 py-3 rounded-sm hover:bg-stone-200 transition-colors"
-                      style={{ fontFamily: 'Inter, sans-serif' }}
-                    >
-                      <span>Update Status (Admin)</span>
-                      <span className="material-symbols-outlined text-sm">gavel</span>
-                    </button>
-                  )}
                   <Link
                     to={`/transfers?property=${listing.blockchainPropertyId || listing.id}`}
                     className="w-full flex items-center justify-between bg-stone-900 text-white text-[10px] font-bold uppercase tracking-widest px-4 py-3 rounded-sm hover:bg-stone-800 transition-colors"

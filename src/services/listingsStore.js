@@ -283,7 +283,10 @@ export function updateRegistryStatus(id, newStatus, reason) {
   const targetId = String(id).trim().toLowerCase();
   let found = false;
   const updated = current.map((item) => {
-    if (String(item.id).toLowerCase() === targetId) {
+    if (
+      String(item.id).toLowerCase() === targetId ||
+      (item.blockchainPropertyId && String(item.blockchainPropertyId).toLowerCase() === targetId)
+    ) {
       found = true;
       return {
         ...item,

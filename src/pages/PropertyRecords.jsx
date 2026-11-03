@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useRegistryData } from '../services/registryDataService';
-import { useMetaMask } from '../context/MetaMaskContext';
 import { SEPOLIA_EXPLORER } from '../blockchain/registryConfig';
 import RegistrySystemBanner from '../components/RegistrySystemBanner';
 import StatusModerationModal from '../components/StatusModerationModal';
@@ -20,8 +19,6 @@ const STATUS_COLORS = {
 export default function PropertyRecords() {
   const [searchParams] = useSearchParams();
   const { records, metrics, loading, isRpcUnavailable, contractAdmin, events, refresh } = useRegistryData();
-  const { account } = useMetaMask();
-
   const [searchQuery, setSearchQuery] = useState('');
   const [filterTab, setFilterTab] = useState(() => searchParams.get('tab') || 'all'); // 'all' | 'registered' | 'disputed' | 'unregistered'
   const [filterType, setFilterType] = useState('all');
@@ -30,11 +27,6 @@ export default function PropertyRecords() {
 
   // Status moderation modal state
   const [moderationTarget, setModerationTarget] = useState(null);
-
-  const isAdmin = useMemo(() => {
-    if (!account || !contractAdmin) return false;
-    return account.toLowerCase() === contractAdmin.toLowerCase();
-  }, [account, contractAdmin]);
 
   const propertyTypes = useMemo(() => {
     const types = new Set(records.map((p) => (p.type || 'other').toLowerCase()));
@@ -311,15 +303,15 @@ export default function PropertyRecords() {
                               View Record
                             </Link>
 
-                            {isAdmin && isChain && (
-                              <button
-                                onClick={() => setModerationTarget(item)}
-                                className="text-[9px] font-bold uppercase tracking-wider text-stone-900 bg-stone-100 border border-stone-300 hover:bg-stone-200 px-2 py-1 rounded-sm"
-                                title="Administrator Status Governance"
-                              >
-                                Moderate
-                              </button>
-                            )}
+                            <button
+                              type="button"
+                              onClick={() => setModerationTarget(item)}
+                              className="text-[9px] font-bold uppercase tracking-wider text-stone-900 bg-stone-100 border border-stone-300 hover:bg-stone-200 px-2 py-1 rounded-sm flex items-center gap-1 transition-colors"
+                              title="Change Status (1. Registered, 2. Disputed, 3. Suspended)"
+                            >
+                              <span className="material-symbols-outlined text-[12px]">gavel</span>
+                              Change Status
+                            </button>
 
                             {isChain && (
                               <Link

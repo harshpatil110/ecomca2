@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Digital Property Registry — Cookbook</title>
+<style>
+  /* ===== Reset & Base ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @page {
+    size: A4;
+    margin: 22mm 18mm 26mm 18mm;
+
+    @top-center {
+      content: "Blockchain · Mini Project          Digital Property Registry";
+      font-size: 8.5pt;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #555;
+      border-bottom: 0.5pt solid #bbb;
+      padding-bottom: 4pt;
+    }
+
+    @bottom-center {
+      content: "Lumina Property Registry Cookbook          " counter(page);
+      font-size: 8.5pt;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #555;
+      border-top: 0.5pt solid #bbb;
+      padding-top: 4pt;
+    }
+  }
+
+  @page :first {
+    @top-center { content: none; }
+    @bottom-center { content: none; }
+  }
+
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    color: #222;
+    background: #fff;
+  }
+
+  /* ===== Screen-only header / footer banners ===== */
+  .page-header, .page-footer {
+    display: none;
+  }
+
+  @media screen {
+    .page-header {
+      display: block;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: #f8f8f8;
+      border-bottom: 1px solid #ccc;
+      text-align: center;
+      font-size: 9pt;
+      color: #555;
+      padding: 5px 0;
+      z-index: 100;
+    }
+    .page-footer {
+      display: block;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #f8f8f8;
+      border-top: 1px solid #ccc;
+      text-align: center;
+      font-size: 9pt;
+      color: #555;
+      padding: 5px 0;
+      z-index: 100;
+    }
+    body { padding-top: 30px; padding-bottom: 30px; }
+  }
+
+  /* ===== Print helpers ===== */
+  .page-break { page-break-before: always; }
+
+  @media print {
+    .page-break { page-break-before: always; }
+    body { font-size: 10pt; }
+    pre, code { font-size: 9pt !important; }
+    table { font-size: 9.5pt; }
+  }
+
+  /* ===== Cover Page ===== */
+  .cover {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    padding: 40px 30px;
+  }
+
+  .cover .institution {
+    font-size: 15pt;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+  }
+
+  .cover .department {
+    font-size: 12pt;
+    color: #333;
+    margin-bottom: 18px;
+  }
+
+  .cover .course-label {
+    font-size: 11pt;
+    color: #444;
+    margin-bottom: 2px;
+  }
+
+  .cover .project-type {
+    font-size: 12pt;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+  }
+
+  .cover .cookbook-label {
+    font-size: 11pt;
+    color: #555;
+    margin-bottom: 30px;
+  }
+
+  .cover .title {
+    font-size: 17pt;
+    font-weight: 700;
+    color: #0d1b3e;
+    margin-bottom: 16px;
+    max-width: 580px;
+    line-height: 1.35;
+  }
+
+  .cover .subtitle {
+    font-size: 10pt;
+    color: #444;
+    max-width: 560px;
+    line-height: 1.5;
+    margin-bottom: 36px;
+  }
+
+  .cover table.roster {
+    border-collapse: collapse;
+    margin-bottom: 28px;
+  }
+
+  .cover table.roster th,
+  .cover table.roster td {
+    border: 1px solid #999;
+    padding: 6px 18px;
+    font-size: 10.5pt;
+  }
+
+  .cover table.roster th {
+    background: #e8e8e8;
+    font-weight: 600;
+  }
+
+  .cover .meta-line {
+    font-size: 10.5pt;
+    color: #333;
+    margin-bottom: 4px;
+  }
+
+  /* ===== Content Sections ===== */
+  .content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  h1 {
+    font-size: 17pt;
+    font-weight: 700;
+    color: #0d1b3e;
+    margin-top: 0;
+    margin-bottom: 14px;
+    border-bottom: 2.5px solid #1a3a6b;
+    padding-bottom: 6px;
+  }
+
+  h2 {
+    font-size: 13pt;
+    font-weight: 600;
+    color: #1a3a6b;
+    margin-top: 22px;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    font-size: 11.5pt;
+    font-weight: 600;
+    color: #2c4a7c;
+    margin-top: 16px;
+    margin-bottom: 6px;
+  }
+
+  p {
+    margin-bottom: 10px;
+    text-align: justify;
+  }
+
+  /* ===== Tables ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 14px;
+    font-size: 10pt;
+  }
+
+  table th, table td {
+    border: 1px solid #aaa;
+    padding: 6px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  table th {
+    background: #e4e7ec;
+    font-weight: 600;
+    color: #222;
+  }
+
+  table tr:nth-child(even) td {
+    background: #f7f8fa;
+  }
+
+  /* ===== Code Blocks ===== */
+  pre {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    padding: 10px 14px;
+    overflow-x: auto;
+    margin-bottom: 14px;
+    font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
+    font-size: 9.5pt;
+    line-height: 1.5;
+    color: #1e293b;
+  }
+
+  code {
+    font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
+    font-size: 9.5pt;
+    background: #eef0f4;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: #1e293b;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  /* ===== Lists ===== */
+  ul, ol {
+    margin-bottom: 12px;
+    padding-left: 22px;
+  }
+
+  li {
+    margin-bottom: 5px;
+  }
+
+  /* ===== Horizontal Rule ===== */
+  hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 20px 0;
+  }
+
+  /* ===== Strong / Bold ===== */
+  strong { font-weight: 600; }
+
+  /* ===== Utility ===== */
+  .section-body { margin-bottom: 30px; }
+</style>
+</head>
+<body>
+
+<!-- Screen-only header & footer -->
+<div class="page-header">Blockchain · Mini Project &nbsp;&nbsp;&nbsp;&nbsp; Digital Property Registry</div>
+<div class="page-footer">Lumina Property Registry Cookbook</div>
+
+<!-- ================================================================
+     COVER PAGE
+     ================================================================ -->
+<div class="cover">
+  <div class="institution">Vivekanand Education Society's Institute Of Technology (VESIT)</div>
+  <div class="department">Department of Information Technology</div>
+
+  <div class="course-label">Course: Blockchain</div>
+  <div class="project-type">Mini Project</div>
+  <div class="cookbook-label">Cookbook / Operations Manual</div>
+
+  <div class="title">Blockchain-Based Digital Property Registration and Verification System</div>
+
+  <div class="subtitle">
+    Ethereum Sepolia Smart Contract, MetaMask Wallet Integration, SHA-256 Document Hashing,
+    Admin-Gated Registration, Owner-Authorized Transfers, and On-Chain Status Moderation
+  </div>
+
+  <table class="roster">
+    <thead>
+      <tr><th>Roll No.</th><th>Name</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>05</td><td>Atharva Chaudhari</td></tr>
+      <tr><td>10</td><td>Sameer Jagiasi</td></tr>
+      <tr><td>28</td><td>Prakash Thapa</td></tr>
+    </tbody>
+  </table>
+
+  <div class="meta-line"><strong>Group No.:</strong> 2</div>
+  <div class="meta-line"><strong>Date:</strong> October 26, 2026</div>
+  <div class="meta-line"><strong>Faculty In-Charge:</strong> Kajal Joseph</div>
+</div>
+
+<!-- ================================================================
+     SECTION 1 — Overview
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 1 — Overview</h1>
+
+  <p>
+    The Lumina Digital Property Registry is a blockchain-based property registration and verification system
+    deployed on the Ethereum Sepolia testnet. It enables a designated administrator to register property records
+    on-chain, verify document integrity via SHA-256 hashing, moderate property status, and facilitate
+    owner-authorized ownership transfers. Every property record is stored immutably on the Ethereum blockchain,
+    ensuring transparency and tamper-proof verification.
+  </p>
+
+  <p>
+    The system replaces traditional centralized property registration with a decentralized, cryptographically
+    verifiable registry where the smart contract is the single source of truth for property ownership, status,
+    and document integrity.
+  </p>
+
+  <h2>1.1 Security and Integrity Layers</h2>
+
+  <ol>
+    <li>
+      <strong>Admin-Gated Registration</strong> — Only the designated contract administrator
+      (<code>0x127d6da08f6617A7fdB3EEf6b8Aaa7f172D51793</code>) can register new properties. The
+      <code>onlyAdmin</code> modifier enforces this on-chain.
+    </li>
+    <li>
+      <strong>Owner-Authorized Transfers</strong> — Only the current on-chain owner can sign and execute a
+      <code>transferProperty()</code> transaction. The admin can prepare a transfer request, but cannot execute it.
+    </li>
+    <li>
+      <strong>SHA-256 Document Integrity</strong> — A supporting document is hashed client-side using the Web
+      Crypto API. The resulting <code>bytes32</code> hash is stored on-chain during registration and used for
+      later verification.
+    </li>
+    <li>
+      <strong>On-Chain Status Moderation</strong> — The admin can update a property's status to
+      <code>Registered (0)</code>, <code>Disputed (1)</code>, or <code>Suspended (2)</code> via
+      <code>updatePropertyStatus()</code>. Disputed or suspended properties cannot be transferred.
+    </li>
+    <li>
+      <strong>Immutable Audit Trail</strong> — Every registration, status change, and ownership transfer emits a
+      contract event (<code>PropertyRegistered</code>, <code>PropertyStatusUpdated</code>,
+      <code>PropertyTransferred</code>) that is permanently recorded on the Ethereum blockchain.
+    </li>
+    <li>
+      <strong>MetaMask Wallet Authentication</strong> — All write transactions require MetaMask signature
+      confirmation. The connected wallet address is verified against the contract's admin address or the
+      property's current owner address before any transaction.
+    </li>
+    <li>
+      <strong>Dual-Layer Data Architecture</strong> — The smart contract stores core property data (owner,
+      location reference, document hash, timestamp, status). Extended metadata (property name, description,
+      images) is stored in browser localStorage and reconciled with on-chain data at runtime.
+    </li>
+  </ol>
+
+  <h2>1.2 Core Stack</h2>
+
+  <table>
+    <thead>
+      <tr><th>Layer</th><th>Tooling</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Blockchain</td><td>Solidity 0.8.20, Ethereum Sepolia Testnet (Chain ID 11155111)</td></tr>
+      <tr><td>Wallet Integration</td><td>MetaMask, ethers.js v6.15 (BrowserProvider, Contract, JsonRpcProvider)</td></tr>
+      <tr><td>Document Hashing</td><td>Web Crypto API (SHA-256), bytes32 on-chain storage</td></tr>
+      <tr><td>Frontend</td><td>React 19, Vite 8, Tailwind CSS v4, React Router v7</td></tr>
+      <tr><td>Data Layer</td><td>Browser localStorage (extended metadata), on-chain registry (core data)</td></tr>
+      <tr><td>RPC Providers</td><td>Public Sepolia RPC endpoints (publicnode.com, sepolia.org, 1rpc.io, drpc.org)</td></tr>
+      <tr><td>Testing</td><td>Custom Node.js test scripts (21 validations, 11 feature tests, 6 registry tests)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================================================================
+     SECTION 2 — Prerequisites
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 2 — Prerequisites</h1>
+
+  <ul>
+    <li>Node.js 22 or 24 (LTS recommended)</li>
+    <li>npm (bundled with Node.js)</li>
+    <li>Git</li>
+    <li>A browser with the MetaMask extension installed</li>
+    <li>MetaMask configured for Sepolia Test Network: RPC <code>https://ethereum-sepolia-rpc.publicnode.com</code>, Chain ID <code>11155111</code></li>
+    <li>Sepolia test ETH for the admin wallet (available from Sepolia faucets)</li>
+    <li>No backend server, database, or additional API keys required</li>
+  </ul>
+
+  <h2>2.1 Install Dependencies</h2>
+
+<pre><code>git clone &lt;repository-url&gt;
+cd blockchain-project
+npm install</code></pre>
+</div>
+
+<!-- ================================================================
+     SECTION 3 — Setup
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 3 — Setup</h1>
+
+  <h2>3.1 Smart Contract (Already Deployed)</h2>
+
+  <p>
+    The PropertyRegistry smart contract is already deployed on Ethereum Sepolia. No compilation or deployment
+    step is needed. The contract address and ABI are bundled in the frontend source.
+  </p>
+
+  <ul>
+    <li><strong>Contract Address:</strong> <code>0x569F33bcd31Aec0eC4c5335A6393E87B3E65b7E5</code></li>
+    <li><strong>Solidity Version:</strong> <code>^0.8.20</code></li>
+    <li><strong>Network:</strong> Ethereum Sepolia (Chain ID <code>11155111</code>)</li>
+    <li><strong>Block Explorer:</strong> <code>https://sepolia.etherscan.io/address/0x569F33bcd31Aec0eC4c5335A6393E87B3E65b7E5</code></li>
+  </ul>
+
+  <h2>3.2 Blockchain Configuration</h2>
+
+  <p>The blockchain connection is configured in <code>src/blockchain/registryConfig.js</code>:</p>
+
+  <table>
+    <thead>
+      <tr><th>Field</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>REGISTRY_ADDRESS</td><td><code>0x569F33bcd31Aec0eC4c5335A6393E87B3E65b7E5</code></td></tr>
+      <tr><td>SEPOLIA_CHAIN_ID</td><td><code>11155111</code> (BigInt)</td></tr>
+      <tr><td>SEPOLIA_EXPLORER</td><td><code>https://sepolia.etherscan.io</code></td></tr>
+      <tr><td>SEPOLIA_RPC_URLS</td><td>publicnode.com, sepolia.org, 1rpc.io, drpc.org</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3.3 ABI Configuration</h2>
+
+  <p>
+    The contract ABI is stored in <code>src/blockchain/registryAbi.json</code> and defines the interface for
+    all contract functions:
+  </p>
+
+  <ul>
+    <li><code>admin()</code>, <code>registerProperty()</code>, <code>getProperty()</code>, <code>getPropertyCount()</code></li>
+    <li><code>verifyProperty()</code>, <code>updatePropertyStatus()</code>, <code>transferProperty()</code>, <code>getOwnershipHistory()</code></li>
+    <li>Events: <code>PropertyRegistered</code>, <code>PropertyStatusUpdated</code>, <code>PropertyTransferred</code></li>
+  </ul>
+
+  <h2>3.4 MetaMask Setup</h2>
+
+  <ol>
+    <li>Install MetaMask browser extension</li>
+    <li>Add Sepolia Test Network (Chain ID 11155111)</li>
+    <li>Import the admin wallet or use the admin account</li>
+    <li>Obtain Sepolia test ETH from a faucet (e.g., Google Cloud Sepolia Faucet)</li>
+  </ol>
+</div>
+
+<!-- ================================================================
+     SECTION 4 — Running the System
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 4 — Running the System</h1>
+
+  <h2>4.1 Start the Development Server</h2>
+
+<pre><code>npm run dev
+# open http://localhost:5173</code></pre>
+
+  <h2>4.2 Production Build Check</h2>
+
+<pre><code>npm run build</code></pre>
+
+  <h2>4.3 Run Validation and Tests</h2>
+
+<pre><code>npm run validate    # 21 project validations
+npm test            # 11 feature tests
+npm run test:registry  # 6 registry-specific tests
+npm run lint        # ESLint analysis</code></pre>
+
+  <h2>4.4 Demo Data Generation</h2>
+
+<pre><code>npm run demo:generate          # Generate demo property records
+npm run demo:generate:dry      # Preview without saving
+npm run sepolia:register:dry   # Preview Sepolia registration
+npm run sepolia:check-funding  # Check admin wallet Sepolia ETH balance</code></pre>
+</div>
+
+<!-- ================================================================
+     SECTION 5 — Frontend Pages Reference
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 5 — Frontend Pages Reference</h1>
+
+  <p>The React app uses React Router v7 with a persistent sidebar layout. Navigation tabs:</p>
+
+  <table>
+    <thead>
+      <tr><th>Page / Component</th><th>Route</th><th>Purpose</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Dashboard (RegistryDashboard)</td>
+        <td><code>/</code></td>
+        <td>Overview metrics sourced from on-chain data: total blockchain records, registered/disputed/suspended counts, verified documents, ownership transfers. Displays recently registered properties.</td>
+      </tr>
+      <tr>
+        <td>Register Property (RegisterProperty)</td>
+        <td><code>/register</code></td>
+        <td>Admin-only form: enter property metadata, upload supporting document (SHA-256 hashed), connect MetaMask, sign <code>registerProperty()</code> transaction. Displays transaction receipt and Etherscan link on success.</td>
+      </tr>
+      <tr>
+        <td>Property Records (PropertyRecords)</td>
+        <td><code>/records</code></td>
+        <td>Tabulated view of all registry records with filters by status (All, Registered, Disputed, Suspended, Registration Required). Each row shows blockchain Property ID, name, owner, status, and registration date. Includes "Change Status" action button.</td>
+      </tr>
+      <tr>
+        <td>Property Registry Record (PropertyRegistryRecord)</td>
+        <td><code>/records/:id</code></td>
+        <td>Detailed single-property view: on-chain data (owner, registeredBy, timestamp, document hash, status), ownership history from <code>getOwnershipHistory()</code>, status moderation, Etherscan links.</td>
+      </tr>
+      <tr>
+        <td>Document Verification (DocumentVerification)</td>
+        <td><code>/verify</code></td>
+        <td>Select a registered property, upload a document, compute SHA-256 hash, compare against on-chain <code>documentHash</code>. Outcomes: Match, Mismatch, Zero Hash, Property Not Found, RPC Unavailable.</td>
+      </tr>
+      <tr>
+        <td>Ownership Transfers (OwnershipTransfers)</td>
+        <td><code>/transfers</code></td>
+        <td>Two-mode transfer workflow: (1) Admin-assisted — admin prepares transfer request with proposed new owner; (2) Direct — current on-chain owner connects MetaMask and signs <code>transferProperty()</code>. Displays on-chain ownership history and transaction confirmation.</td>
+      </tr>
+      <tr>
+        <td>Registry Analytics (RegistryAnalytics)</td>
+        <td><code>/analytics</code></td>
+        <td>Registry statistics and metrics: on-chain record distribution, status breakdown, contract event feed with Etherscan links.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Supporting Components</h2>
+
+  <table>
+    <thead>
+      <tr><th>Component</th><th>Purpose</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>RegistrySystemBanner</td>
+        <td>Expandable banner: contract address, network status, admin authorization, live property lookup, ETH balance checker, contract events feed.</td>
+      </tr>
+      <tr>
+        <td>StatusModerationModal</td>
+        <td>Modal for changing property status (Registered/Disputed/Suspended) via on-chain <code>updatePropertyStatus()</code> transaction with reason field.</td>
+      </tr>
+      <tr>
+        <td>MetaMaskContext (Provider + Hook)</td>
+        <td>React Context providing wallet state: connected account, chain ID, <code>connectWallet()</code>, <code>switchNetwork()</code>.</td>
+      </tr>
+      <tr>
+        <td>DocumentIntegrityVerification</td>
+        <td>SHA-256 document hashing using Web Crypto API for registration-time hash computation.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================================================================
+     SECTION 6 — Demo Story
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 6 — Demo Story (Implemented End-to-End)</h1>
+
+  <ol>
+    <li>
+      <strong>Connect MetaMask.</strong> Open the app at <code>http://localhost:5173</code>. Click "Connect Wallet"
+      in the Registry System Banner. MetaMask prompts for account access. Ensure Sepolia network is selected.
+    </li>
+    <li>
+      <strong>Register a property.</strong> Navigate to Register Property. Fill in: property title, location
+      reference, property type, survey number, owner name, and owner wallet address. Upload a supporting document
+      (PDF, image, etc.) — the SHA-256 hash is computed automatically. Click "Register on Blockchain". MetaMask
+      prompts for transaction signing. After confirmation, a transaction receipt with Etherscan link is displayed.
+    </li>
+    <li>
+      <strong>View the registered record.</strong> Navigate to Property Records. The newly registered property
+      appears with its blockchain Property ID, status "Registered", and registration timestamp. Click "View" to
+      see full details including on-chain owner address, registeredBy address, document hash, and ownership history.
+    </li>
+    <li>
+      <strong>Verify document integrity.</strong> Navigate to Document Verification. Select the registered property
+      by its blockchain ID. Upload the same document used during registration. The system computes the SHA-256 hash
+      and compares it against the on-chain hash. A green "Hash Match Confirmed" indicates the document is identical
+      to the registered version.
+    </li>
+    <li>
+      <strong>Moderate property status.</strong> On the Property Records page or the property detail page, click
+      "Change Status". Select "Disputed" or "Suspended", enter a reason, and confirm. MetaMask prompts for the
+      <code>updatePropertyStatus()</code> transaction. The status badge updates after confirmation.
+    </li>
+    <li>
+      <strong>Transfer ownership.</strong> Navigate to Ownership Transfers. Select a property (must have status
+      "Registered"). The admin enters the proposed new owner's name and wallet address. The current on-chain owner
+      must then connect their MetaMask wallet and sign the <code>transferProperty()</code> transaction. After
+      confirmation, the ownership history updates and a new entry appears in the contract event log.
+    </li>
+    <li>
+      <strong>Inspect analytics.</strong> Navigate to Registry Analytics. View on-chain metrics: total registered
+      properties, status distribution, contract event history with transaction hashes and Etherscan links.
+    </li>
+  </ol>
+</div>
+
+<!-- ================================================================
+     SECTION 7 — Testing
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 7 — Testing</h1>
+
+<pre><code>npm run validate
+# Runs 21 project validations (all must pass)</code></pre>
+
+<pre><code>npm test
+# Runs 11 feature tests</code></pre>
+
+<pre><code>npm run test:registry
+# Runs 6 registry-specific tests</code></pre>
+
+  <p>The test suites verify:</p>
+
+  <table>
+    <thead>
+      <tr><th>Group</th><th>What It Checks</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1. Project Structure</td>
+        <td>Required files exist: package.json, vite.config.js, registryAbi.json, registryConfig.js, App.jsx</td>
+      </tr>
+      <tr>
+        <td>2. Blockchain Integration</td>
+        <td>Contract ABI contains all required functions (registerProperty, getProperty, verifyProperty, updatePropertyStatus, transferProperty, getOwnershipHistory, getPropertyCount, admin). ABI contains all required events (PropertyRegistered, PropertyStatusUpdated, PropertyTransferred).</td>
+      </tr>
+      <tr>
+        <td>3. Registry Configuration</td>
+        <td>Correct contract address, Sepolia chain ID, RPC URLs configured, explorer URL set.</td>
+      </tr>
+      <tr>
+        <td>4. Component Architecture</td>
+        <td>All pages and components exist and export default functions. MetaMaskContext exists. RegistryDataService exports required hooks and functions.</td>
+      </tr>
+      <tr>
+        <td>5. Data Reconciliation</td>
+        <td>localStorage integration with on-chain data. Status mapping (0→Registered, 1→Disputed, 2→Suspended). Metrics computation from on-chain records.</td>
+      </tr>
+      <tr>
+        <td>6. Security Validations</td>
+        <td>Admin-only registration gating. Owner-only transfer authorization. SHA-256 document hash generation. Network validation (Sepolia chain ID check).</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================================================================
+     SECTION 8 — Smart Contract
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 8 — Smart Contract</h1>
+
+  <p>One Solidity contract deployed on Ethereum Sepolia:</p>
+
+  <table>
+    <thead>
+      <tr><th>Contract</th><th>Purpose</th><th>Key Functions</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>PropertyRegistry</td>
+        <td>Core property registration, ownership, status, and verification</td>
+        <td><code>registerProperty()</code>, <code>getProperty()</code>, <code>verifyProperty()</code>, <code>updatePropertyStatus()</code>, <code>transferProperty()</code>, <code>getOwnershipHistory()</code>, <code>getPropertyCount()</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>8.1 PropertyRegistry</h2>
+
+  <h3>State Variables</h3>
+  <ul>
+    <li><code>admin</code> (address) — immutable administrator, set in constructor</li>
+    <li><code>nextPropertyId</code> (uint256) — auto-incrementing property counter</li>
+    <li><code>properties</code> (mapping uint256 → Property) — core property storage</li>
+    <li><code>ownershipHistory</code> (mapping uint256 → address[]) — ownership chain per property</li>
+  </ul>
+
+  <h3>PropertyStatus Enum</h3>
+  <p><code>Registered (0)</code>, <code>Disputed (1)</code>, <code>Suspended (2)</code></p>
+
+  <h3>Property Struct</h3>
+  <p>
+    <code>propertyId</code>, <code>currentOwner</code>, <code>registeredBy</code>,
+    <code>locationReference</code>, <code>documentHash</code> (bytes32),
+    <code>registrationTimestamp</code>, <code>status</code> (PropertyStatus)
+  </p>
+
+  <h3>Modifiers</h3>
+  <ul>
+    <li><code>onlyAdmin</code> — restricts <code>registerProperty()</code> and <code>updatePropertyStatus()</code> to the admin address</li>
+  </ul>
+
+  <h3>Functions</h3>
+  <ul>
+    <li>
+      <code>registerProperty(initialOwner, locationReference, documentHash)</code> → uint256 — Admin-only. Creates
+      a new property record with auto-incremented ID. Records the initial owner, location, document hash,
+      timestamp, and sets status to Registered. Emits <code>PropertyRegistered</code>.
+    </li>
+    <li>
+      <code>getProperty(propertyId)</code> → Property struct — Returns all fields for a given property ID.
+    </li>
+    <li>
+      <code>getPropertyCount()</code> → uint256 — Returns total number of registered properties.
+    </li>
+    <li>
+      <code>verifyProperty(propertyId)</code> → bool — Returns true if the property exists and has status Registered.
+    </li>
+    <li>
+      <code>updatePropertyStatus(propertyId, newStatus, reason)</code> — Admin-only. Changes property status.
+      Emits <code>PropertyStatusUpdated</code>.
+    </li>
+    <li>
+      <code>transferProperty(propertyId, newOwner)</code> — Callable only by the current on-chain owner. Requires
+      status = Registered. Updates currentOwner, appends to ownership history.
+      Emits <code>PropertyTransferred</code>.
+    </li>
+    <li>
+      <code>getOwnershipHistory(propertyId)</code> → address[] — Returns the complete chain of previous owners.
+    </li>
+  </ul>
+
+  <h3>Events</h3>
+  <ul>
+    <li><code>PropertyRegistered(propertyId, initialOwner, locationReference, documentHash)</code></li>
+    <li><code>PropertyStatusUpdated(propertyId, newStatus, reason)</code></li>
+    <li><code>PropertyTransferred(propertyId, newOwner)</code></li>
+  </ul>
+</div>
+
+<!-- ================================================================
+     SECTION 9 — Registry Data Service
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 9 — Registry Data Service</h1>
+
+  <p>
+    The unified data layer is implemented in <code>src/services/registryDataService.js</code>. It reconciles
+    on-chain smart contract data with browser localStorage metadata.
+  </p>
+
+  <h2>Key Functions</h2>
+
+  <table>
+    <thead>
+      <tr><th>Function</th><th>Purpose</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>getViableProvider()</code></td>
+        <td>Returns a working Sepolia provider — MetaMask BrowserProvider if on Sepolia, else tries 4 public RPC endpoints with 2.5s timeout each</td>
+      </tr>
+      <tr>
+        <td><code>refreshRegistryData()</code></td>
+        <td>Fetches admin address, property count, all on-chain properties (parallel), contract events (last 50,000 blocks), reconciles with localStorage. Publishes to all subscribed components.</td>
+      </tr>
+      <tr>
+        <td><code>useRegistryData()</code> (React hook)</td>
+        <td>Subscribes to the cached registry state. Returns records, metrics, events, loading/error state, and a <code>refresh()</code> function.</td>
+      </tr>
+      <tr>
+        <td><code>fetchSepoliaBalance(address)</code></td>
+        <td>Returns the Sepolia ETH balance for any address</td>
+      </tr>
+      <tr>
+        <td><code>lookupOnChainProperty(propertyId)</code></td>
+        <td>Direct on-chain property lookup by ID with ownership history</td>
+      </tr>
+      <tr>
+        <td><code>getCachedRegistryData()</code></td>
+        <td>Returns the current cached state without triggering a refresh</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Data Reconciliation Logic</h2>
+
+  <ol>
+    <li>Fetch <code>admin()</code> and <code>getPropertyCount()</code> from the contract</li>
+    <li>Fetch all properties in parallel using <code>getProperty(1)</code> through <code>getProperty(n)</code></li>
+    <li>Query <code>PropertyRegistered</code>, <code>PropertyStatusUpdated</code>, and <code>PropertyTransferred</code> events</li>
+    <li>Match on-chain records to localStorage entries by <code>blockchainPropertyId</code></li>
+    <li>For on-chain records without local metadata, create synthetic records</li>
+    <li>For local records without blockchain IDs, mark as "Registration Required"</li>
+    <li>Compute consolidated metrics: registered, disputed, suspended, verified documents, transfers</li>
+  </ol>
+</div>
+
+<!-- ================================================================
+     SECTION 10 — Current Deployment
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 10 — Current Deployment</h1>
+
+  <p>Deployed on Ethereum Sepolia (public testnet):</p>
+
+  <table>
+    <thead>
+      <tr><th>Item</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Network (Chain ID)</td><td>Sepolia / Ethereum Testnet (11155111)</td></tr>
+      <tr><td>PropertyRegistry Contract</td><td><code>0x569F33bcd31Aec0eC4c5335A6393E87B3E65b7E5</code></td></tr>
+      <tr><td>Block Explorer</td><td><code>https://sepolia.etherscan.io/address/0x569F33bcd31Aec0eC4c5335A6393E87B3E65b7E5</code></td></tr>
+      <tr><td>Solidity Compiler</td><td><code>^0.8.20</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>10.1 Roles and Accounts</h2>
+
+  <table>
+    <thead>
+      <tr><th>Account</th><th>Role</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>0x127d6da08f6617A7fdB3EEf6b8Aaa7f172D51793</code></td>
+        <td>Contract Administrator — can register properties and moderate status</td>
+      </tr>
+      <tr>
+        <td>Property's <code>currentOwner</code> (on-chain)</td>
+        <td>Current Owner — can authorize and sign ownership transfers</td>
+      </tr>
+      <tr>
+        <td>Any wallet</td>
+        <td>Read-Only — can view records, verify documents, and inspect history</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The admin address is immutable and set in the contract constructor. It cannot be changed after deployment.</p>
+</div>
+
+<!-- ================================================================
+     SECTION 11 — Current Limitations
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 11 — Current Limitations</h1>
+
+  <ul>
+    <li><strong>Single administrator:</strong> Only one admin address is hardcoded in the constructor; no admin rotation or multi-sig governance.</li>
+    <li><strong>No backend persistence:</strong> Extended property metadata (name, description, images) is stored only in browser localStorage. Clearing browser data loses this metadata (on-chain data remains intact).</li>
+    <li><strong>Public testnet:</strong> Deployed on Sepolia testnet; mainnet deployment would require gas cost considerations and security audit.</li>
+    <li><strong>No IPFS/Arweave storage:</strong> Document files are not stored on decentralized storage; only the SHA-256 hash is recorded. The original document must be retained off-chain.</li>
+    <li><strong>RPC dependency:</strong> The application depends on public Sepolia RPC endpoints. Rate limiting or downtime affects read operations. A fallback cascade of 4 RPC providers mitigates this.</li>
+    <li><strong>No contract upgradeability:</strong> The smart contract is not upgradeable (no proxy pattern). Bug fixes or feature additions require redeploying a new contract.</li>
+    <li><strong>Event query window:</strong> Contract events are queried for the last 50,000 blocks only. Older events may not appear in the frontend event feed.</li>
+    <li><strong>Browser-only wallet:</strong> MetaMask (or compatible browser wallet) is required for all write transactions. Hardware wallet or mobile wallet support is not tested.</li>
+    <li><strong>Transfer authorization gap:</strong> The admin-assisted transfer creates a local pending request, but the current owner must independently connect their wallet to sign. There is no notification system — the owner must be informed out-of-band.</li>
+  </ul>
+</div>
+
+<!-- ================================================================
+     SECTION 12 — On-Chain vs Off-Chain Architecture
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 12 — On-Chain vs Off-Chain Architecture</h1>
+
+  <p>This section documents what data is stored on the blockchain versus what is maintained locally.</p>
+
+  <h2>12.1 Data Storage Distribution</h2>
+
+  <table>
+    <thead>
+      <tr><th>Data Field</th><th>Storage Location</th><th>Persistence</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Property ID</td><td>On-Chain (auto-incremented)</td><td>Permanent, immutable</td></tr>
+      <tr><td>Current Owner Address</td><td>On-Chain (Property struct)</td><td>Permanent, updated on transfer</td></tr>
+      <tr><td>Registered By Address</td><td>On-Chain (Property struct)</td><td>Permanent, immutable</td></tr>
+      <tr><td>Location Reference</td><td>On-Chain (Property struct)</td><td>Permanent, immutable</td></tr>
+      <tr><td>Document Hash (bytes32)</td><td>On-Chain (Property struct)</td><td>Permanent, immutable</td></tr>
+      <tr><td>Registration Timestamp</td><td>On-Chain (Property struct)</td><td>Permanent, immutable</td></tr>
+      <tr><td>Property Status</td><td>On-Chain (Property struct)</td><td>Permanent, admin-modifiable</td></tr>
+      <tr><td>Ownership History</td><td>On-Chain (address array)</td><td>Permanent, append-only</td></tr>
+      <tr><td>Property Name / Title</td><td>localStorage (browser)</td><td>Volatile, user-clearable</td></tr>
+      <tr><td>Property Description</td><td>localStorage (browser)</td><td>Volatile, user-clearable</td></tr>
+      <tr><td>Property Images</td><td>localStorage (browser)</td><td>Volatile, user-clearable</td></tr>
+      <tr><td>Property Type / Area</td><td>localStorage (browser)</td><td>Volatile, user-clearable</td></tr>
+      <tr><td>Owner Full Name</td><td>localStorage (browser)</td><td>Volatile, user-clearable</td></tr>
+    </tbody>
+  </table>
+
+  <h2>12.2 Design Rationale</h2>
+
+  <ul>
+    <li>
+      <strong>On-chain data</strong> is limited to what is legally and cryptographically essential: ownership,
+      location reference, document hash, and status. This minimizes gas costs and keeps sensitive information off
+      a public ledger.
+    </li>
+    <li>
+      <strong>Off-chain metadata</strong> enriches the user experience with property names, descriptions, and
+      images without incurring blockchain storage costs. This data can be reconstructed or re-entered if lost.
+    </li>
+    <li>
+      <strong>Reconciliation</strong> happens at runtime in <code>registryDataService.js</code>, which merges
+      localStorage entries with on-chain records using <code>blockchainPropertyId</code> as the join key.
+    </li>
+  </ul>
+</div>
+
+<!-- ================================================================
+     SECTION 13 — Troubleshooting
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 13 — Troubleshooting</h1>
+
+  <table>
+    <thead>
+      <tr><th>Symptom / Error</th><th>Fix</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>"MetaMask is not installed"</td>
+        <td>Install the MetaMask browser extension and refresh the page.</td>
+      </tr>
+      <tr>
+        <td>"Wrong network" / Chain ID mismatch</td>
+        <td>Switch MetaMask to Sepolia Test Network (Chain ID 11155111). The app provides a "Switch Network" button.</td>
+      </tr>
+      <tr>
+        <td>"Only admin can perform this action"</td>
+        <td>The connected MetaMask wallet is not the contract admin (<code>0x127d...1793</code>). Switch to the admin account.</td>
+      </tr>
+      <tr>
+        <td>"Transaction was rejected by the owner in MetaMask"</td>
+        <td>The user clicked "Reject" in the MetaMask popup. Retry the action and click "Confirm".</td>
+      </tr>
+      <tr>
+        <td>"Cannot reach any Sepolia RPC endpoint"</td>
+        <td>All 4 public RPC providers are unreachable. Check internet connection. The app falls back to cached localStorage data.</td>
+      </tr>
+      <tr>
+        <td>"Property not found on blockchain"</td>
+        <td>The entered Property ID does not exist on-chain. Verify the ID using the property records page.</td>
+      </tr>
+      <tr>
+        <td>"Hash Mismatch Detected"</td>
+        <td>The uploaded document differs from the one registered. Even a single byte change produces a different SHA-256 hash.</td>
+      </tr>
+      <tr>
+        <td>"Zero Hash / Document Not Registered"</td>
+        <td>The property was registered without a document hash (0x000...000). Document verification is not available.</td>
+      </tr>
+      <tr>
+        <td>"Disputed or Suspended property cannot be transferred"</td>
+        <td>The smart contract blocks transfers for non-Registered properties. Change the status back to Registered first.</td>
+      </tr>
+      <tr>
+        <td>"Only the current owner can transfer"</td>
+        <td>The connected wallet does not match the property's on-chain <code>currentOwner</code>. The actual owner must connect their wallet.</td>
+      </tr>
+      <tr>
+        <td>Registration transaction fails with gas error</td>
+        <td>The admin wallet may be out of Sepolia ETH. Use <code>npm run sepolia:check-funding</code> to check balance. Obtain more from a faucet.</td>
+      </tr>
+      <tr>
+        <td>MetaMask nonce error</td>
+        <td>Reset the MetaMask account: Settings → Advanced → Clear Activity Tab Data.</td>
+      </tr>
+      <tr>
+        <td>Property appears locally but not on blockchain</td>
+        <td>The property was saved to localStorage but the blockchain registration transaction was not completed. Re-register on the Register Property page.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================================================================
+     SECTION 14 — Repository Map
+     ================================================================ -->
+<div class="page-break"></div>
+<div class="content section-body">
+  <h1>Section 14 — Repository Map</h1>
+
+<pre><code>blockchain-project/
+  src/
+    blockchain/
+      registryAbi.json           Contract ABI (8 functions, 3 events)
+      registryConfig.js          Contract address, chain ID, RPC URLs
+      DocumentIntegrityVerification.jsx  SHA-256 hashing component
+    components/
+      RegistrySystemBanner.jsx   Contract info banner, property lookup,
+                                 ETH balance, events feed
+      StatusModerationModal.jsx  On-chain status update modal
+    context/
+      MetaMaskContext.jsx        Wallet state context (account, chain,
+                                 connect, switch network)
+    data/
+      demoProperties.json        Demo property data for testing
+    layouts/
+      MainLayout.jsx             Sidebar navigation layout
+    pages/
+      RegistryDashboard.jsx      Dashboard with on-chain metrics
+      RegisterProperty.jsx       Admin property registration form
+      PropertyRecords.jsx        Registry records table with filters
+      PropertyRegistryRecord.jsx Individual property detail view
+      DocumentVerification.jsx   SHA-256 hash comparison tool
+      OwnershipTransfers.jsx     Admin-assisted and direct transfers
+      RegistryAnalytics.jsx      Registry statistics and event feed
+      AuthSecurity.jsx           Authentication and security info
+    services/
+      registryDataService.js     Unified on-chain + localStorage data
+                                 reconciliation service
+      listingsStore.js           localStorage CRUD operations
+    App.jsx                      Router configuration, MetaMaskProvider
+    main.jsx                     React DOM entry point
+    index.css                    Tailwind CSS v4 imports
+  scripts/
+    validate-project.js          21 project validations
+    test-features.js             11 feature tests
+    test-registry-features.js    6 registry tests
+    generate-demo-properties.js  Demo data generator
+    register-demo-sepolia.js     Sepolia registration script
+    check-sepolia-funding.js     Admin wallet balance checker
+  package.json, vite.config.js, eslint.config.js, index.html</code></pre>
+</div>
+
+</body>
+</html>
